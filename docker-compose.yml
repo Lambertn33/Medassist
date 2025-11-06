@@ -1,0 +1,56 @@
+version: "3.9"
+
+services:
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: medassist-server
+    restart: unless-stopped
+    working_dir: /var/www/html
+    volumes:
+      - ./server:/var/www/html
+    ports:
+      - "8000:8000"
+    environment:
+      APP_ENV: local
+      APP_DEBUG: "true"
+      APP_KEY: base64:dummykeydummykeydummykeydummykeydummykeydummy=
+      APP_URL: http://localhost:8000
+      LOG_CHANNEL: stack
+      DB_CONNECTION: mysql
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_DATABASE: medassist
+      DB_USERNAME: medassist
+      DB_PASSWORD: medassist
+    depends_on:
+      db:
+        condition: service_healthy
+    command: >
+      sh -c "composer install --no-dev --prefer-dist --no-interaction &&
+             php artisan migrate --force &&
+             php artisan serve --host=0.0.0.0 --port=8000"
+
+  db:
+    image: mysql:8.0
+    container_name: medassist-db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: medassist
+      MYSQL_USER: medassist
+      MYSQL_PASSWORD: medassist
+      MYSQL_ROOT_PASSWORD: medassist
+    ports:
+      - "3306:3306"
+    volumes:
+      - db-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-pmedassist"]
+      interval: 3s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+volumes:
+  db-data:

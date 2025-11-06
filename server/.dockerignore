@@ -1,0 +1,52 @@
+# Dependencies (installed in container)
+vendor/
+node_modules/
+
+# Environment files (use docker-compose env vars)
+.env
+.env.*
+!.env.example
+
+# Cache and logs (regenerated in container)
+bootstrap/cache/*
+storage/logs/*
+storage/framework/cache/*
+storage/framework/sessions/*
+storage/framework/views/*
+
+# Git files
+.git/
+.gitignore
+.gitattributes
+
+# IDE files
+.vscode/
+.idea/
+.phpactor.json
+.fleet/
+.nova/
+.zed/
+
+# Testing
+tests/
+phpunit.xml
+.phpunit.cache/
+.phpunit.result.cache
+
+# Documentation
+README.md
+*.md
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Build artifacts
+public/build/
+public/hot/
+public/storage
+
+# Database
+*.sqlite
+*.sqlite-journal
+
