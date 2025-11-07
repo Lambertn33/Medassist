@@ -3,10 +3,52 @@ name: CI
 on:
   pull_request:
     branches: [ main ]
+    types: [opened, synchronize, reopened]
 
 jobs:
+  ticketing:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
+      contents: read
+
+    if: github.event.action == 'opened'
+
+    steps:
+      - name: Create linked ticket issue
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+
+            const { data: issue } = await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `[PR #${pr.number}] ${pr.title}`,
+              body: `This ticket was created automatically for PR #${pr.number}.\n\nPR link: ${pr.html_url}`,
+              labels: ['ticket', 'status:in-progress']
+            });
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: pr.number,
+              body: `Linked ticket: #${issue.number}`
+            });
+
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: pr.number,
+              labels: ['status:in-progress']
+            });
+
   backend-tests:
     runs-on: ubuntu-latest
+    needs: [ticketing]
+    permissions:
+      contents: read
 
     steps:
       - uses: actions/checkout@v3

@@ -1,0 +1,46 @@
+name: Ticket status sync
+
+on:
+  issues:
+    types: [closed]
+
+jobs:
+  sync-pr-labels:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
+
+    steps:
+      - name: Update PR label when ticket is closed
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issue = context.payload.issue;
+  
+            const hasTicketLabel = issue.labels.some(l => l.name === 'ticket');
+            if (!hasTicketLabel) {
+              return;
+            }
+
+            const prLinkMatch = issue.body && issue.body.match(/PR link: (.+)/);
+            if (!prLinkMatch) {
+              console.log('No PR link found in issue body, skipping.');
+              return;
+            }
+
+            const prUrl = prLinkMatch[1];
+            const prNumberMatch = prUrl.match(/pull\/(\d+)/);
+            if (!prNumberMatch) {
+              console.log('Could not extract PR number from URL, skipping.');
+              return;
+            }
+
+            const prNumber = Number(prNumberMatch[1]);
+
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+              labels: ['status:done']
+            });
