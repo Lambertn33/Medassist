@@ -1,0 +1,25 @@
+name: Deploy (Simulated)
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Docker
+        run: docker --version
+
+      - name: Build backend Docker image
+        run: |
+          echo "Building MedAssist backend Docker image..."
+          docker build -t medassist-backend:latest ./server
+          echo "Docker image built successfully!"
+
+      - name: Simulate deployment
+        run: |
+          echo "Simulating deployment..."
+          echo "MedAssist backend deployed successfully to staging (simulated)."
