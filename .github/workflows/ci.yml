@@ -19,7 +19,13 @@ jobs:
           coverage: none
 
       - name: Install dependencies
-        run: cd server && composer install --no-progress --no-suggest
+        run: cd server && composer install --no-progress --no-suggest --prefer-dist
+
+      - name: Prepare environment
+        run: |
+          cd server
+          cp .env.example .env
+          php artisan key:generate
 
       - name: Run tests
         run: cd server && php artisan test
