@@ -28,11 +28,11 @@ class StorePatientRequest extends FormRequest
             'last_name' => 'required|string|max:255',
             'gender' => 'required|in:' . implode(',', Patient::GENDERS),
             'date_of_birth' => 'required|date',
-            'phone' => 'required|regex:/^07\d{8}$/',
-            'national_id' => 'required|digits:16',
+            'phone' => 'required|regex:/^07\d{8}$/|unique:patients,phone',
+            'national_id' => 'required|digits:16|unique:patients,national_id',
             'address' => 'required|string|max:255',
             'emergency_contact_name' => 'required|string|max:255',
-            'emergency_contact_phone' => 'required|string|max:255',
+            'emergency_contact_phone' => 'required|regex:/^07\d{8}$/',
         ];
     }
 }
