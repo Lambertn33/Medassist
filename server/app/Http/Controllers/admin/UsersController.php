@@ -27,4 +27,9 @@ class UsersController extends Controller
         ]);
         return $this->usersServices->createUser($fields);
     }
+
+    public function show(int $id)
+    {
+        return $this->usersServices->viewUser($id);
+    }
 }

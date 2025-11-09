@@ -17,5 +17,6 @@ Route::prefix('admin')->middleware('auth:sanctum', 'can:admin')->group(function 
     Route::controller(AdminUsersController::class)->prefix('users')->group(function () {
         Route::get('/', 'index');
         Route::post('/', 'store');
+        Route::get('/{id}', 'show');
     });
 });

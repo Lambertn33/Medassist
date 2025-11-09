@@ -38,4 +38,23 @@ class usersServices
             ], 500);
         }
     }
+
+    public function viewUser(int $id)
+    {
+        try {
+            $user = User::find($id)->select('id', 'name', 'email', 'role', 'last_login_at')->first();
+            if(!$user) {
+                return response()->json([
+                    'message' => 'User not found',
+                ], 404);
+            }
+            return response()->json([
+                'user' => $user,
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
 }
