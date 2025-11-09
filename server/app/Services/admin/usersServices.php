@@ -6,55 +6,31 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
 
-class usersServices
+class UsersServices
 {
-    public function getAllUsers(string $search = null)
+    public function getAllUsers(?string $search = null)
     {
-        try {
-            $users = User::where('name', 'like', "%$search%")
-            ->orWhere('email', 'like', "%$search%")
-            ->get(['id', 'name', 'email', 'role', 'last_login_at']);
-            return response()->json([
-                'users' => $users,
-            ], 200);
-        } catch (\Exception $e) {
-            return response()->json([
-                'message' => $e->getMessage(),
-            ], 500);
+        $query = User::query()
+            ->select('id', 'name', 'email', 'role', 'last_login_at');
+
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%");
+            });
         }
+
+        return $query->get();
     }
 
-    public function createUser(array $fields)
+    public function createUser(array $fields): User
     {
-        try {
-            $user = User::create($fields);
-            return response()->json([
-                'message' => 'User created successfully',
-                'user' => $user,
-            ], 201);
-        } catch (\Exception $e) {
-            return response()->json([
-                'message' => $e->getMessage(),
-            ], 500);
-        }
+        return User::create($fields);
     }
 
-    public function viewUser(int $id)
+    public function viewUser(int $id): ?User
     {
-        try {
-            $user = User::find($id)->select('id', 'name', 'email', 'role', 'last_login_at')->first();
-            if(!$user) {
-                return response()->json([
-                    'message' => 'User not found',
-                ], 404);
-            }
-            return response()->json([
-                'user' => $user,
-            ], 200);
-        } catch (\Exception $e) {
-            return response()->json([
-                'message' => $e->getMessage(),
-            ], 500);
-        }
+        return User::select('id', 'name', 'email', 'role', 'last_login_at')
+            ->find($id);
     }
 }
