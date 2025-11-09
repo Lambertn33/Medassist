@@ -5,7 +5,7 @@ namespace App\Http\Controllers\admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Services\admin\UsersServices;
-use App\Models\User;
+use App\Http\Requests\admin\users\StoreUserRequest;
 use Illuminate\Validation\ValidationException;
 use Exception;
 
@@ -32,17 +32,10 @@ class UsersController extends Controller
         }
     }
     
-    public function store(Request $request)
+    public function store(StoreUserRequest $request)
     {
         try {
-            $fields = $request->validate([
-                'name'     => 'required|string|max:255',
-                'email'    => 'required|email|unique:users,email',
-                'password' => 'required|string|min:8|confirmed',
-                'role'     => 'required|in:' . implode(',', User::ROLES),
-            ]);
-
-            $user = $this->usersServices->createUser($fields);
+            $user = $this->usersServices->createUser($request->validated());
 
             return response()->json([
                 'message' => 'User created successfully',

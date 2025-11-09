@@ -12,7 +12,8 @@ class StorePatientRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        $authUser = $this->user();
+        return $authUser?->can('admin') || $authUser?->can('doctor') || $authUser?->can('nurse') ?? false;
     }
 
     /**
