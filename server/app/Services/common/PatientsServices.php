@@ -36,4 +36,10 @@ class PatientsServices
     {
         return Patient::with('encouters')->find($id);
     }
+
+    public function updatePatient(Patient $patient, array $fields): ?Patient
+    {
+         $patient->update($fields);
+         return $patient;
+    }
 }

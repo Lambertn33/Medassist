@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Services\common\PatientsServices;
 use App\Http\Requests\common\patients\StorePatientRequest;
+use App\Http\Requests\common\patients\UpdatePatientRequest;
 use Exception;
 
 class PatientsController extends Controller
@@ -63,4 +64,26 @@ class PatientsController extends Controller
             ], 500);
         }
     }
+
+    public function update(int $id, UpdatePatientRequest $request)
+    {
+        try {
+            $patient = $this->patientsServices->viewPatient($id);
+            if (! $patient) {
+                return response()->json([
+                    'message' => 'Patient not found',
+                ], 404);
+            }
+            $patient = $this->patientsServices->updatePatient($patient, $request->validated());
+            return response()->json([
+                'message' => 'Patient updated successfully',
+                'patient' => $patient,
+            ], 200);
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => 'An error occurred while updating the patient.',
+                'error'   => $e->getMessage(),
+            ], 500);
+        }
+    }   
 }
