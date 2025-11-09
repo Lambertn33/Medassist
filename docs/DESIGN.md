@@ -111,7 +111,60 @@ initialized → in_progress → completed
 
 ---
 
-## 7. DevOps & Process
+## 7. Authentication & User Management
+
+### 7.1 Authentication
+
+MedAssist uses **Laravel Sanctum** for token-based API authentication.
+
+- Users authenticate via:
+  - `POST /api/auth/login` – returns a personal access token and user profile.
+  - `POST /api/auth/logout` – revokes the current token.
+
+- Tokens are stored in the `personal_access_tokens` table and are required as:
+  - `Authorization: Bearer <token>` in API requests.
+- A **default system admin** is created via database seeding to bootstrap the system. Other users are created by this admin via the admin APIs.
+
+The auth logic is implemented using a **service + controller** pattern:
+- `AuthService` contains the core login/logout logic (password check, token issuance, last login tracking).
+- `AuthController` is thin and delegates to the service.
+
+### 7.2 Roles
+
+The system defines three roles via the `User` model:
+
+- `admin`
+- `doctor`
+- `nurse`
+
+These roles are stored on the `users` table and used to control access to admin endpoints (such as user management) and, in future, to patient and encounter features.
+
+Helper methods like `User::isAdmin()` keep role checks explicit and self-documenting in the code.
+
+### 7.3 Admin User Management
+
+User management is scoped to administrators and exposed under `/api/admin/users`:
+
+- `GET /api/admin/users` – list all users, with an optional `search` parameter (matching `name` or `email`).
+- `POST /api/admin/users` – create a new user (doctor, nurse, clerk, or admin).
+- `GET /api/admin/users/{id}` – view a single user’s profile.
+
+All admin user endpoints are protected by:
+
+- `auth:sanctum` – the caller must be authenticated.
+- an `admin` or `role` middleware – the caller must have role `admin`.
+
+User creation uses standard validation in the controller:
+
+- `name` – required string
+- `email` – required, unique
+- `password` – required, minimum length, `confirmed`
+- `role` – must be one of the predefined roles (`User::ROLES`)
+
+The `UsersService` encapsulates user listing/creation/retrieval logic, while the `UsersController` handles HTTP concerns (validation, responses, error codes).
+
+
+## 8. DevOps & Process
 
 | Aspect | Implementation |
 |--------|----------------|
@@ -124,7 +177,7 @@ initialized → in_progress → completed
 
 ---
 
-## 8. Tradeoffs & Design Decisions
+## 9. Tradeoffs & Design Decisions
 
 | Decision | Justification |
 |-----------|----------------|
@@ -135,17 +188,17 @@ initialized → in_progress → completed
 
 ---
 
-## 9. Future Vision (If Given 6 More Months)
+## 10. Future Vision (If Given 6 More Months)
 
-- 🏥 **Multi-clinic Management** — allow each clinic to manage its own patients and staff.
-- 📡 **Offline Mode with Sync** — local storage and synchronization queue for disconnected environments.
-- ⚕️ **FHIR Integration** — standardize data exchange with national EMR systems.
-- 📊 **Analytics Dashboard** — visualize encounter data and patient metrics.
-- 🔐 **Role-based Access Control (RBAC)** using Spatie permissions.
+- **Multi-clinic Management** — allow each clinic to manage its own patients and staff.
+- **Offline Mode with Sync** — local storage and synchronization queue for disconnected environments.
+- **FHIR Integration** — standardize data exchange with national EMR systems.
+- **Analytics Dashboard** — visualize encounter data and patient metrics.
+- **Role-based Access Control (RBAC)** using Spatie permissions.
 
 ---
 
-## 10. References
+## 11. References
 
 - Laravel Docs – [https://laravel.com/docs](https://laravel.com/docs)
 - Next.js Docs – [https://nextjs.org/docs](https://nextjs.org/docs)
@@ -153,7 +206,7 @@ initialized → in_progress → completed
 
 ---
 
-## 11. Summary
+## 12. Summary
 
 > **MedAssist** is a lightweight Laravel + Next.js platform that helps rural nurses record consultations quickly and efficiently.  
 > It focuses on simplicity, maintainability, and real-world practicality — with a design that can evolve into a full clinic management platform in the next phase.
