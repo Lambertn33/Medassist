@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Unit;
+namespace Tests\Unit\Services;
 
 use App\Models\User;
 use App\Services\auth\AuthServices;
@@ -8,7 +8,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
-class AuthTest extends TestCase
+class AuthServicesTest extends TestCase
 {
     use RefreshDatabase;
 
