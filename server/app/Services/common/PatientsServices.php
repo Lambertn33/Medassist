@@ -4,6 +4,7 @@ namespace App\Services\common;
 
 use App\Models\Patient;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class PatientsServices
 {
@@ -41,5 +42,24 @@ class PatientsServices
     {
          $patient->update($fields);
          return $patient;
+    }
+
+    public function deletePatient(Patient $patient): bool
+    {
+        return DB::transaction(function () use ($patient) {
+            $encounterIds = $patient->encouters()->pluck('id');
+            
+            if ($encounterIds->isNotEmpty()) {
+                DB::table('observations')->whereIn('encounter_id', $encounterIds)->delete();
+                
+                DB::table('diagnoses')->whereIn('encounter_id', $encounterIds)->delete();
+                
+                DB::table('treatments')->whereIn('encounter_id', $encounterIds)->delete();
+            }
+
+            $patient->encouters()->delete();
+            
+            return $patient->delete();
+        });
     }
 }

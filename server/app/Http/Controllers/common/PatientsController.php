@@ -86,4 +86,30 @@ class PatientsController extends Controller
             ], 500);
         }
     }   
+
+    public function destroy(int $id)
+    {
+        try {
+            $patient = $this->patientsServices->viewPatient($id);
+            if (! $patient) {
+                return response()->json([
+                    'message' => 'Patient not found',
+                ], 404);
+            }
+            $deleted = $this->patientsServices->deletePatient($patient);
+            if (! $deleted) {
+                return response()->json([
+                    'message' => 'Failed to delete patient',
+                ], 500);
+            }
+            return response()->json([
+                'message' => 'Patient deleted successfully',
+            ], 200);
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => 'An error occurred while deleting the patient.',
+                'error'   => $e->getMessage(),
+            ], 500);
+        }
+    }
 }
