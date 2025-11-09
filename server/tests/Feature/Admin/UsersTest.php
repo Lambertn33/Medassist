@@ -8,7 +8,7 @@ use Tests\TestCase;
 use App\Models\User;
 use Laravel\Sanctum\Sanctum;
 
-class AdminUsersTest extends TestCase
+class UsersTest extends TestCase
 {
     use RefreshDatabase;
 
