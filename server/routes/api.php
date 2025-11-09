@@ -27,5 +27,8 @@ Route::prefix('common')->middleware('auth:sanctum')->group(function () {
     Route::controller(CommonPatientsController::class)->prefix('patients')->group(function () {
         Route::get('/', 'index');
         Route::post('/', 'store');
+        Route::prefix('{id}')->group(function () {
+            Route::get('/', 'show');
+        });
     });
 });

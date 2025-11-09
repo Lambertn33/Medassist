@@ -31,4 +31,9 @@ class PatientsServices
     {
         return Patient::create($fields);
     }
+
+    public function viewPatient(int $id): ?Patient
+    {
+        return Patient::with('encouters')->find($id);
+    }
 }

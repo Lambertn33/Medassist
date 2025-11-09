@@ -43,4 +43,24 @@ class PatientsController extends Controller
             ], 500);
         }
     }
+
+    public function show(int $id)
+    {
+        try {
+            $patient = $this->patientsServices->viewPatient($id);
+            if (! $patient) {
+                return response()->json([
+                    'message' => 'Patient not found',
+                ], 404);
+            }
+            return response()->json([
+                'patient' => $patient,
+            ], 200);
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => 'An error occurred while fetching the patient.',
+                'error'   => $e->getMessage(),
+            ], 500);
+        }
+    }
 }
