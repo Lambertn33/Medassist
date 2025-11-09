@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests\Unit\Services\Admin;
+namespace Tests\Unit\Services\admin;
 
 use App\Services\admin\UsersServices;
 use Tests\TestCase;
