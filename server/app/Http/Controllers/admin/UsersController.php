@@ -13,7 +13,16 @@ class UsersController extends Controller
     }
     public function getAllUsers(Request $request)
     {
-        $search = $request->query('search');
-        return $this->usersServices->getAllUsers($search);
+        try {
+            $search = $request->query('search');
+            $users = $this->usersServices->getAllUsers($search);
+            return response()->json([
+                'users' => $users,
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage(),
+            ], 500);
+        }
     }
 }
