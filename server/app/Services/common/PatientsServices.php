@@ -24,7 +24,7 @@ class PatientsServices
             });
         }
 
-        return $query->get();
+        return $query->withCount('encouters')->get();
     }
 
     public function createPatient(array $fields): Patient
