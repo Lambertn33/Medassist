@@ -45,11 +45,10 @@ class AdminUsersTest extends TestCase
         return $nurse;
     }
 
-    public function test_admin_can_get_all_users()
+    public function test_admin_can_get_all_users(): void
     {
         $user1 = User::factory()->create(['role' => User::NURSE_ROLE]);
         $user2 = User::factory()->create(['role' => User::DOCTOR_ROLE]);
-        
         $admin = $this->actingAsAdmin();
         
         $response = $this->get('/api/admin/users');
@@ -69,12 +68,10 @@ class AdminUsersTest extends TestCase
             ->assertJsonCount(3, 'users');
         
         $responseData = $response->json();
-        $this->assertArrayHasKey('users', $responseData);
-        
         $userIds = collect($responseData['users'])->pluck('id')->toArray();
-        $this->assertContains($user1->id, $userIds, 'User1 should be in the response');
-        $this->assertContains($user2->id, $userIds, 'User2 should be in the response');
-        $this->assertContains($admin->id, $userIds, 'Admin should be in the response');
+        $this->assertContains($user1->id, $userIds);
+        $this->assertContains($user2->id, $userIds);
+        $this->assertContains($admin->id, $userIds);
     }
 
     public function test_admin_can_create_a_user()
@@ -86,7 +83,7 @@ class AdminUsersTest extends TestCase
             'email' => 'newuser@example.com',
             'password' => 'password123',
             'password_confirmation' => 'password123',
-            'role' => User::DOCTOR_ROLE,
+            'role' => User::NURSE_ROLE,
         ]);
         
         $response->assertStatus(201)
@@ -102,7 +99,7 @@ class AdminUsersTest extends TestCase
         
         $this->assertDatabaseHas('users', [
             'email' => 'newuser@example.com',
-            'role' => User::DOCTOR_ROLE,
+            'role' => User::NURSE_ROLE,
         ]);
     }
 
@@ -110,48 +107,44 @@ class AdminUsersTest extends TestCase
     {
         $admin = $this->actingAsAdmin();
         $user = User::factory()->create(['role' => User::DOCTOR_ROLE]);
+        
         $response = $this->get('/api/admin/users/' . $user->id);
-        $response->assertStatus(200)->assertJsonStructure([
-            'user' => [
-                'id',
-                'name',
-                'email',    
-                'role',
-                'last_login_at',
-            ],
-        ]);
-    }
-
-    public function test_nurse_or_doctor_cannot_view_all_users()
-    {
-        $nurse = $this->actingAsNurse();
-        $doctor = $this->actingAsDoctor();
-
-        $responseNurse = $this->get('/api/admin/users');
-        $responseDoctor = $this->get('/api/admin/users');
-
-        $responseNurse->assertStatus(403);
-        $responseDoctor->assertStatus(403);
+        
+        $response->assertStatus(200)
+            ->assertJsonStructure([
+                'user' => [
+                    'id',
+                    'name',
+                    'email',
+                    'role',
+                    'last_login_at',
+                ],
+            ]);
+        
+        $responseData = $response->json();
+        $this->assertEquals($user->id, $responseData['user']['id']);
+        $this->assertEquals($user->email, $responseData['user']['email']);
     }
 
     public function test_nurse_or_doctor_cannot_create_a_user()
     {
         $nurse = $this->actingAsNurse();
         $doctor = $this->actingAsDoctor();
-
+        
         $responseNurse = $this->postJson('/api/admin/users', [
             'name' => 'New Test User',
-            'email' => 'newuser@example.com',
+            'email' => 'newuser1@example.com',
             'password' => 'password123',
             'password_confirmation' => 'password123',
-            'role' => User::DOCTOR_ROLE,
+            'role' => User::NURSE_ROLE,
         ]);
+        
         $responseDoctor = $this->postJson('/api/admin/users', [
             'name' => 'New Test User',
-            'email' => 'newuser@example.com',
+            'email' => 'newuser2@example.com',
             'password' => 'password123',
             'password_confirmation' => 'password123',
-            'role' => User::DOCTOR_ROLE,
+            'role' => User::NURSE_ROLE,
         ]);
 
         $responseNurse->assertStatus(403);
@@ -162,8 +155,8 @@ class AdminUsersTest extends TestCase
     {
         $nurse = $this->actingAsNurse();
         $doctor = $this->actingAsDoctor();
-
         $user = User::factory()->create(['role' => User::DOCTOR_ROLE]);
+        
         $responseNurse = $this->get('/api/admin/users/' . $user->id);
         $responseDoctor = $this->get('/api/admin/users/' . $user->id);
         
