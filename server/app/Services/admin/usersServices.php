@@ -10,9 +10,32 @@ class usersServices
 {
     public function getAllUsers(string $search = null)
     {
-        $users = User::where('name', 'like', "%$search%")
+        try {
+            $users = User::where('name', 'like', "%$search%")
             ->orWhere('email', 'like', "%$search%")
             ->get(['id', 'name', 'email', 'role', 'last_login_at']);
-        return $users;
+            return response()->json([
+                'users' => $users,
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function createUser(array $fields)
+    {
+        try {
+            $user = User::create($fields);
+            return response()->json([
+                'message' => 'User created successfully',
+                'user' => $user,
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage(),
+            ], 500);
+        }
     }
 }
