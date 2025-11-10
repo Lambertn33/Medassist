@@ -26,12 +26,12 @@ class Patient extends Model
     ];
 
     /**
-     * Get all of the encouters for the Patient
+     * Get all of the encounters for the Patient
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function encouters(): HasMany
+    public function encounters(): HasMany
     {
-        return $this->hasMany(Encouter::class);
+        return $this->hasMany(Encounter::class);
     }
 }

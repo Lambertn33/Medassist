@@ -14,7 +14,7 @@ return new class extends Migration
     {
         Schema::create('observations', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('encounter_id')->constrained('encouters');
+            $table->foreignId('encounter_id')->constrained('encounters');
             $table->enum('type', Observation::TYPES);
             $table->string('value');
             $table->string('unit');

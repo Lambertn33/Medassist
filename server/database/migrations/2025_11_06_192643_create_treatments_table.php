@@ -14,7 +14,7 @@ return new class extends Migration
     {
         Schema::create('treatments', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('encounter_id')->constrained('encouters');
+            $table->foreignId('encounter_id')->constrained('encounters');
             $table->enum('type', Treatment::TYPES);
             $table->string('description');
             $table->string('dosage');
