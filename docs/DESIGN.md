@@ -360,7 +360,52 @@ If a measurement is incorrect, a new observation should be recorded instead.
 
 --
 
-## 11. DevOps & Process
+## 11. Diagnoses Management
+
+### 11.1 Purpose
+
+Diagnoses represent the clinical conditions identified during a patient encounter.  
+Each diagnosis belongs to a specific encounter and helps capture the doctor’s or nurse’s medical assessment at the end of consultation.
+
+---
+
+### 11.2 Data Model
+
+| Field | Type | Description |
+|--------|------|-------------|
+| `id` | integer | Primary key |
+| `encounter_id` | integer | Reference to the related encounter |
+| `code` | string (nullable) | Optional standardized code (e.g., ICD-10 code) |
+| `label` | string | Description of the condition (e.g., "Malaria, unspecified") |
+| `is_primary` | boolean | Indicates if this is the main diagnosis for the encounter |
+| `created_at` | datetime | When the diagnosis was recorded |
+| `updated_at` | datetime | Last modification timestamp (for audit) |
+
+**Relationships:**
+- Each `Diagnosis` belongs to one `Encounter`.
+- An `Encounter` can have multiple diagnoses.
+
+---
+
+### 11.3 Access Control
+
+- Only authenticated users with `admin`, `doctor`, or `nurse` roles can create or view diagnoses.
+- Diagnoses are append-only and cannot be updated or deleted in the MVP to preserve medical record integrity.
+
+---
+
+### 11.4 Core Endpoints
+
+| Endpoint | Method | Description |
+|-----------|--------|-------------|
+| `/api/encounters/{encounterId}/diagnoses` | `GET` | Retrieve all diagnoses for a given encounter. |
+| `/api/encounters/{encounterId}/diagnoses` | `POST` | Record a new diagnosis for the encounter. |
+
+All routes are protected by `auth:sanctum` and restricted to the `admin`, `doctor`, and `nurse` roles.
+
+--
+
+## 12. DevOps & Process
 
 | Aspect | Implementation |
 |--------|----------------|
@@ -373,7 +418,7 @@ If a measurement is incorrect, a new observation should be recorded instead.
 
 ---
 
-## 12. Tradeoffs & Design Decisions
+## 13. Tradeoffs & Design Decisions
 
 | Decision | Justification |
 |-----------|----------------|
@@ -384,7 +429,7 @@ If a measurement is incorrect, a new observation should be recorded instead.
 
 ---
 
-## 13. Future Vision (If Given 6 More Months)
+## 14. Future Vision (If Given 6 More Months)
 
 - **Multi-clinic Management** — allow each clinic to manage its own patients and staff.
 - **Offline Mode with Sync** — local storage and synchronization queue for disconnected environments.
@@ -394,7 +439,7 @@ If a measurement is incorrect, a new observation should be recorded instead.
 
 ---
 
-## 14. References
+## 15. References
 
 - Laravel Docs – [https://laravel.com/docs](https://laravel.com/docs)
 - Next.js Docs – [https://nextjs.org/docs](https://nextjs.org/docs)
@@ -402,7 +447,7 @@ If a measurement is incorrect, a new observation should be recorded instead.
 
 ---
 
-## 15. Summary
+## 16. Summary
 
 > **MedAssist** is a lightweight Laravel + Next.js platform that helps rural nurses record consultations quickly and efficiently.  
 > It focuses on simplicity, maintainability, and real-world practicality — with a design that can evolve into a full clinic management platform in the next phase.

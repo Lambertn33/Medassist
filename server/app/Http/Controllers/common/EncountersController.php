@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Services\common\EncountersServices;
 use App\Models\Encounter;
+use Exception;
+use Illuminate\Validation\ValidationException;
 
 class EncountersController extends Controller
 {
@@ -123,6 +125,22 @@ class EncountersController extends Controller
                     'message' => 'Consultation has not been started, or has already been ended or cancelled',
                 ], 400);
             }
+            
+            $diagnosisCount = $encounter->diagnoses()->count();
+            $observationCount = $encounter->observations()->count();
+            
+            if ($diagnosisCount === 0) {
+                return response()->json([
+                    'message' => 'Cannot end consultation. At least one diagnosis is required.',
+                ], 400);
+            }
+            
+            if ($observationCount === 0) {
+                return response()->json([
+                    'message' => 'Cannot end consultation. At least one observation is required.',
+                ], 400);
+            }
+            
             $encounterToUpdate = $this->encountersServices->endConsultation($id, $fields);
             return response()->json([
                 'message' => 'Consultation ended successfully',

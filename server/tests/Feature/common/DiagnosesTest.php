@@ -7,11 +7,11 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use App\Models\User;
 use Laravel\Sanctum\Sanctum;
-use App\Models\Observation;
+use App\Models\Diagnosis;
 use App\Models\Encounter;
 use App\Models\Patient;
 
-class ObservationsTest extends TestCase
+class DiagnosesTest extends TestCase
 {
     use RefreshDatabase;
 
@@ -42,7 +42,7 @@ class ObservationsTest extends TestCase
         return $doctor;
     }
 
-    public function test_any_authenticated_user_can_get_observations()
+    public function test_any_authenticated_user_can_get_diagnoses()
     {
         $admin = $this->actingAsAdmin();
         $patient = Patient::create([
@@ -62,21 +62,20 @@ class ObservationsTest extends TestCase
             'user_id' => $admin->id,
         ]);
 
-
         $this->actingAsAdmin();
-        $adminResponse = $this->get('/api/common/encounters/' . $encounter->id . '/observations');
+        $adminResponse = $this->get('/api/common/encounters/' . $encounter->id . '/diagnoses');
         $adminResponse->assertStatus(200);
 
         $this->actingAsNurse();
-        $nurseResponse = $this->get('/api/common/encounters/' . $encounter->id . '/observations');
+        $nurseResponse = $this->get('/api/common/encounters/' . $encounter->id . '/diagnoses');
         $nurseResponse->assertStatus(200);
 
         $this->actingAsDoctor();
-        $doctorResponse = $this->get('/api/common/encounters/' . $encounter->id . '/observations');
+        $doctorResponse = $this->get('/api/common/encounters/' . $encounter->id . '/diagnoses');
         $doctorResponse->assertStatus(200);
     }
 
-    public function test_any_authenticated_user_can_create_an_observation()
+    public function test_any_authenticated_user_can_create_an_diagnosis()
     {
         $admin = $this->actingAsAdmin();
         $patient = Patient::create([
@@ -97,26 +96,26 @@ class ObservationsTest extends TestCase
         ]);
 
         $this->actingAsAdmin();
-        $adminResponse = $this->postJson('/api/common/encounters/' . $encounter->id . '/observations', [
-            'type' => Observation::TEMPERATURE_TYPE,
-            'value' => '37.5',
-            'unit' => '°C',
+        $adminResponse = $this->postJson('/api/common/encounters/' . $encounter->id . '/diagnoses', [
+            'code' => '1234567890',
+            'label' => 'Diagnosis',
+            'is_primary' => true,
         ]);
         $adminResponse->assertStatus(201);
 
         $this->actingAsNurse();
-        $nurseResponse = $this->postJson('/api/common/encounters/' . $encounter->id . '/observations', [
-            'type' => Observation::TEMPERATURE_TYPE,
-            'value' => '37.5',
-            'unit' => '°C',
+        $nurseResponse = $this->postJson('/api/common/encounters/' . $encounter->id . '/diagnoses', [
+            'code' => '1234567890',
+            'label' => 'Diagnosis',
+            'is_primary' => true,
         ]);
         $nurseResponse->assertStatus(201);
 
         $this->actingAsDoctor();
-        $doctorResponse = $this->postJson('/api/common/encounters/' . $encounter->id . '/observations', [
-            'type' => Observation::TEMPERATURE_TYPE,
-            'value' => '37.5',
-            'unit' => '°C',
+        $doctorResponse = $this->postJson('/api/common/encounters/' . $encounter->id . '/diagnoses', [
+            'code' => '1234567890',
+            'label' => 'Diagnosis',
+            'is_primary' => true,
         ]);
         $doctorResponse->assertStatus(201);
     }
