@@ -9,6 +9,8 @@ use App\Models\User;
 use Laravel\Sanctum\Sanctum;
 use App\Models\Patient;
 use App\Models\Encounter;
+use App\Models\Diagnosis;
+use App\Models\Observation;
 
 class EncountersTest extends TestCase
 {
@@ -288,6 +290,49 @@ class EncountersTest extends TestCase
         $this->actingAsDoctor();
         $doctorresponse = $this->putJson('/api/common/encounters/' . $encounter3->id . '/start-consultation');
         $doctorresponse->assertStatus(200);
+
+        // Create at least one diagnosis and one observation for each encounter
+        Diagnosis::create([
+            'encounter_id' => $encounter1->id,
+            'code' => '1234567890',
+            'label' => 'Test Diagnosis',
+            'is_primary' => true,
+        ]);
+        Observation::create([
+            'encounter_id' => $encounter1->id,
+            'type' => Observation::TEMPERATURE_TYPE,
+            'value' => '37.5',
+            'unit' => '°C',
+            'recorded_at' => now(),
+        ]);
+
+        Diagnosis::create([
+            'encounter_id' => $encounter2->id,
+            'code' => '1234567890',
+            'label' => 'Test Diagnosis',
+            'is_primary' => true,
+        ]);
+        Observation::create([
+            'encounter_id' => $encounter2->id,
+            'type' => Observation::TEMPERATURE_TYPE,
+            'value' => '37.5',
+            'unit' => '°C',
+            'recorded_at' => now(),
+        ]);
+
+        Diagnosis::create([
+            'encounter_id' => $encounter3->id,
+            'code' => '1234567890',
+            'label' => 'Test Diagnosis',
+            'is_primary' => true,
+        ]);
+        Observation::create([
+            'encounter_id' => $encounter3->id,
+            'type' => Observation::TEMPERATURE_TYPE,
+            'value' => '37.5',
+            'unit' => '°C',
+            'recorded_at' => now(),
+        ]);
 
         $this->actingAsAdmin();
         $adminresponse = $this->putJson('/api/common/encounters/' . $encounter1->id . '/end-consultation', [
