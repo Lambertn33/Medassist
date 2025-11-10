@@ -11,4 +11,10 @@ class DiagnosesServices
         ->orderBy('is_primary', 'desc')
         ->get(['id', 'encounter_id', 'code', 'label', 'is_primary']);
     }
+
+    public function storeDiagnosis(array $fields, int $encounterId): Diagnosis
+    {
+        $fields['encounter_id'] = $encounterId;
+        return Diagnosis::create($fields);
+    }
 }

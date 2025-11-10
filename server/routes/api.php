@@ -54,6 +54,7 @@ Route::prefix('common')->middleware('auth:sanctum')->group(function () {
             });
             Route::controller(CommonDiagnosesController::class)->prefix('diagnoses')->group(function () {
                 Route::get('/', 'index');
+                Route::post('/', 'store');
             });
         });
     });
