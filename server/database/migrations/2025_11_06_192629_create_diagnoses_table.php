@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('diagnoses', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('encounter_id')->constrained('encouters');
+            $table->foreignId('encounter_id')->constrained('encounters');
             $table->string('code');
             $table->string('label');
             $table->boolean('is_primary')->default(false);

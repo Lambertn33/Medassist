@@ -25,7 +25,7 @@ class PatientsServices
             });
         }
 
-        return $query->withCount('encouters')->get();
+        return $query->withCount('encounters')->get();
     }
 
     public function createPatient(array $fields): Patient
@@ -35,7 +35,7 @@ class PatientsServices
 
     public function viewPatient(int $id): ?Patient
     {
-        return Patient::with('encouters')->find($id);
+        return Patient::with('encounters')->find($id);
     }
 
     public function updatePatient(Patient $patient, array $fields): ?Patient
@@ -47,7 +47,7 @@ class PatientsServices
     public function deletePatient(Patient $patient): bool
     {
         return DB::transaction(function () use ($patient) {
-            $encounterIds = $patient->encouters()->pluck('id');
+            $encounterIds = $patient->encounters()->pluck('id');
             
             if ($encounterIds->isNotEmpty()) {
                 DB::table('observations')->whereIn('encounter_id', $encounterIds)->delete();
@@ -57,7 +57,7 @@ class PatientsServices
                 DB::table('treatments')->whereIn('encounter_id', $encounterIds)->delete();
             }
 
-            $patient->encouters()->delete();
+            $patient->encounters()->delete();
             
             return $patient->delete();
         });

@@ -7,6 +7,7 @@ use App\Http\Controllers\auth\AuthController;
 use App\Http\Controllers\admin\UsersController as AdminUsersController;
 
 use App\Http\Controllers\common\PatientsController as CommonPatientsController;
+use App\Http\Controllers\common\EncountersController as CommonEncountersController;
 
 // Auth Routes
 Route::controller(AuthController::class)->prefix('auth')->group(function () {
@@ -31,6 +32,15 @@ Route::prefix('common')->middleware('auth:sanctum')->group(function () {
             Route::get('/', 'show');
             Route::put('/', 'update');
             Route::delete('/', 'destroy')->middleware('can:admin');
+        });
+    });
+    Route::controller(CommonEncountersController::class)->prefix('encounters')->group(function () {
+        Route::get('/', 'index');
+        Route::post('/', 'store');
+        Route::prefix('{id}')->group(function () {
+            Route::get('/', 'show');
+            Route::put('/start-consultation', 'startConsultation');
+            Route::put('/end-consultation', 'endConsultation');
         });
     });
 });

@@ -224,7 +224,87 @@ Access control is role-based and enforced via a custom `role` middleware plus `a
 - **View/list**: accessible to all users (`admin`, `doctor`, `nurse`).
 - **Delete**: restricted to `admin` only.
 
-## 9. DevOps & Process
+---
+## 9. Encounters Management
+
+### 9.1 Purpose
+
+Encounters are the **core unit of clinical activity** in MedAssist.  
+Each encounter represents one consultation session between a patient and a healthcare provider (nurse or doctor).  
+It connects all clinical records — observations, diagnoses, and treatments — under one workflow.
+
+### 9.2 Data Model
+
+Each encounter record stores:
+
+| Field | Type | Description |
+|--------|------|-------------|
+| `id` | integer | Primary key |
+| `patient_id` | integer | References the patient involved |
+| `user_id` | integer | Nurse or doctor who initiated the encounter |
+| `status` | enum | `initialized`, `in_progress`, `completed`, `cancelled` |
+| `started_at` | datetime | When the consultation began |
+| `ended_at` | datetime | When the consultation ended |
+| `summary` | string | Optional brief summary |
+| `is_synced` | boolean | For offline sync support (default `true`) |
+
+### 9.3 Access Control
+
+- All authenticated clinical staff (admin, doctor, nurse) can:
+  - Create encounters for patients
+  - View encounters
+  - Start and end consultations
+- There is **no delete** endpoint to preserve data integrity.
+- Access control is handled using `auth:sanctum` and `role` middleware.
+
+### 9.4 Lifecycle & Business Logic
+
+| Step | Status | Triggered By | Description |
+|------|---------|--------------|-------------|
+| 1. | `initialized` | Nurse / Doctor / Admin | Encounter is created but consultation not yet started |
+| 2. | `in_progress` | Nurse / Doctor / Admin | Consultation begins — `started_at` timestamp is set |
+| 3. | `completed` | Nurse / Doctor / Admin | Consultation ends — `ended_at` timestamp is set |
+| 4. | `cancelled` | Nurse / Doctor / Admin | Consultation aborted
+
+Transitions:
+
+- `initialized → in_progress` when starting consultation  
+- `in_progress → completed` when ending consultation  
+
+---
+
+### 9.5 Core Endpoints
+
+| Endpoint | Method | Description |
+|-----------|--------|-------------|
+| `/api/encounters` | `GET` | List all encounters, optionally filtered by `patient_id` or `status` |
+| `/api/encounters` | `POST` | Create a new encounter (`status = initialized`) |
+| `/api/encounters/{id}` | `GET` | View details of one encounter |
+| `/api/encounters/{id}/start-consultation` | `PUT` | Transition `initialized → in_progress` and set `started_at` |
+| `/api/encounters/{id}/end-consultation` | `PUT` | Transition `in_progress → completed` and set `ended_at` |
+| `/api/encounters/{id}/cancel-consultation` | `PUT` | Transition `in_progress → canceled` and set `ended_at` |
+
+**Note:**  
+There are no generic `update` or `delete` endpoints.  
+Encounters are immutable medical records once completed.
+
+---
+
+### 9.6 Timestamp Semantics
+
+| Field | Description |
+|--------|-------------|
+| `created_at` | When the encounter was registered (patient check-in) |
+| `started_at` | When the consultation officially began |
+| `ended_at` | When the consultation ended |
+
+This design enables metrics such as:
+- **Waiting Time:** `started_at - created_at`
+- **Consultation Duration:** `ended_at - started_at`
+
+---
+
+## 10. DevOps & Process
 
 | Aspect | Implementation |
 |--------|----------------|
@@ -237,7 +317,7 @@ Access control is role-based and enforced via a custom `role` middleware plus `a
 
 ---
 
-## 10. Tradeoffs & Design Decisions
+## 11. Tradeoffs & Design Decisions
 
 | Decision | Justification |
 |-----------|----------------|
@@ -248,7 +328,7 @@ Access control is role-based and enforced via a custom `role` middleware plus `a
 
 ---
 
-## 11. Future Vision (If Given 6 More Months)
+## 12. Future Vision (If Given 6 More Months)
 
 - **Multi-clinic Management** — allow each clinic to manage its own patients and staff.
 - **Offline Mode with Sync** — local storage and synchronization queue for disconnected environments.
@@ -258,7 +338,7 @@ Access control is role-based and enforced via a custom `role` middleware plus `a
 
 ---
 
-## 12. References
+## 13. References
 
 - Laravel Docs – [https://laravel.com/docs](https://laravel.com/docs)
 - Next.js Docs – [https://nextjs.org/docs](https://nextjs.org/docs)
@@ -266,7 +346,7 @@ Access control is role-based and enforced via a custom `role` middleware plus `a
 
 ---
 
-## 12. Summary
+## 14. Summary
 
 > **MedAssist** is a lightweight Laravel + Next.js platform that helps rural nurses record consultations quickly and efficiently.  
 > It focuses on simplicity, maintainability, and real-world practicality — with a design that can evolve into a full clinic management platform in the next phase.
