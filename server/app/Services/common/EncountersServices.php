@@ -45,4 +45,18 @@ class EncountersServices
         ]);
         return $encounter;
     }
+
+    public function endConsultation(int $id, array $fields): ?Encounter
+    {
+        $encounter = $this->getEncounter($id);
+        if (! $encounter) {
+            return null;
+        }
+        $encounter->update([
+            'status' => Encounter::STATUS_COMPLETED,
+            'ended_at' => now(),
+            'summary' => $fields['summary'],
+        ]);
+        return $encounter;
+    }
 }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\common;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Services\common\EncountersServices;
+use App\Models\Encounter;
 
 class EncountersController extends Controller
 {
@@ -85,6 +86,12 @@ class EncountersController extends Controller
                     'message' => 'Encounter not found',
                 ], 404);
             }
+
+            if ($encounter->status !== Encounter::STATUS_INITIALIZED) {
+                return response()->json([
+                    'message' => 'Consultation has already started',
+                ], 400);
+            }
             $encounter = $this->encountersServices->startConsultation($id);
             return response()->json([
                 'message' => 'Consultation started successfully',
@@ -94,6 +101,43 @@ class EncountersController extends Controller
         catch (Exception $e) {
             return response()->json([
                 'message' => 'An error occurred while starting consultation.',
+                'error'   => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function endConsultation(Request $request, int $id)
+    {
+        try {
+            $fields = $request->validate([
+                'summary' => 'required|string',
+            ]);
+            $encounter = $this->encountersServices->getEncounter($id);
+            if (! $encounter) {
+                return response()->json([
+                    'message' => 'Encounter not found',
+                ], 404);
+            }
+            if ($encounter->status !== Encounter::STATUS_IN_PROGRESS) {
+                return response()->json([
+                    'message' => 'Consultation has not been started, or has already been ended or cancelled',
+                ], 400);
+            }
+            $encounterToUpdate = $this->encountersServices->endConsultation($id, $fields);
+            return response()->json([
+                'message' => 'Consultation ended successfully',
+                'encounter' => $encounterToUpdate,
+            ], 200);
+        }
+        catch (ValidationException $e) {
+            return response()->json([
+                'message' => 'Validation failed',
+                'errors'  => $e->errors(),
+            ], 422);
+        }
+        catch (Exception $e) {
+            return response()->json([
+                'message' => 'An error occurred while ending consultation.',
                 'error'   => $e->getMessage(),
             ], 500);
         }
