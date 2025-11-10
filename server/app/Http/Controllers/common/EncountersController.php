@@ -75,4 +75,27 @@ class EncountersController extends Controller
             ], 500);
         }
     }
+
+    public function startConsultation(int $id)
+    {
+        try {
+            $encounter = $this->encountersServices->getEncounter($id);
+            if (! $encounter) {
+                return response()->json([
+                    'message' => 'Encounter not found',
+                ], 404);
+            }
+            $encounter = $this->encountersServices->startConsultation($id);
+            return response()->json([
+                'message' => 'Consultation started successfully',
+                'encounter' => $encounter,
+            ], 200);
+        }
+        catch (Exception $e) {
+            return response()->json([
+                'message' => 'An error occurred while starting consultation.',
+                'error'   => $e->getMessage(),
+            ], 500);
+        }
+    }
 }

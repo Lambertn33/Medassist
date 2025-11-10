@@ -32,4 +32,17 @@ class EncountersServices
     {
         return Encounter::with('patient', 'user', 'observations', 'diagnoses', 'treatments')->find($id);
     }
+
+    public function startConsultation(int $id): ?Encounter
+    {
+        $encounter = $this->getEncounter($id);
+        if (! $encounter) {
+            return null;
+        }
+        $encounter->update([
+            'status' => Encounter::STATUS_IN_PROGRESS,
+            'started_at' => now(),
+        ]);
+        return $encounter;
+    }
 }

@@ -39,6 +39,7 @@ Route::prefix('common')->middleware('auth:sanctum')->group(function () {
         Route::post('/', 'store');
         Route::prefix('{id}')->group(function () {
             Route::get('/', 'show');
+            Route::put('/start-consultation', 'startConsultation');
         });
     });
 });
