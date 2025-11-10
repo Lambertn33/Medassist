@@ -304,7 +304,63 @@ This design enables metrics such as:
 
 ---
 
-## 10. DevOps & Process
+## 10. Observations Management
+
+### 10.1 Purpose
+
+Observations represent patient vital signs recorded during a consultation.  
+They are linked to a specific encounter and provide essential data such as temperature, blood pressure, heart rate, and oxygen saturation.
+
+---
+
+### 10.2 Core Endpoints
+
+| Endpoint | Method | Description |
+|-----------|--------|-------------|
+| `/api/encounters/{encounterId}/observations` | `GET` | Retrieve all observations for a given encounter. |
+| `/api/encounters/{encounterId}/observations` | `POST` | Record a new observation during an ongoing consultation. |
+
+Both endpoints require authentication (`auth:sanctum`) and are available to **admin**, **doctor**, and **nurse** roles.
+
+---
+
+### 10.3 Observation Structure
+
+| Field | Type | Description |
+|--------|------|-------------|
+| `id` | integer | Primary key |
+| `encounter_id` | integer | Reference to the encounter |
+| `type` | enum | One of `TEMPERATURE`, `BLOOD_PRESSURE`, `HEART_RATE`, `OXYGEN_SATURATION` |
+| `value` | string | Measurement value (e.g., `38.5`, `120/80`) |
+| `unit` | string | Measurement unit (e.g., `°C`, `mmHg`) |
+| `recorded_at` | datetime | Timestamp of when measurement was recorded which default is now|
+
+---
+
+Observations are immutable: once recorded, they cannot be updated or deleted.  
+If a measurement is incorrect, a new observation should be recorded instead.
+
+---
+
+### 10.4 Design Decision
+
+- Observations are **encounter-scoped** to keep the context of each consultation intact.  
+- Data is **append-only** for auditability and clinical safety.  
+- Updates and deletions are intentionally omitted to preserve medical integrity.  
+- Each observation is lightweight, timestamped, and easy to sync in offline environments.
+
+---
+
+### 10.5 Future Enhancements (If Given 6 Months)
+
+- Support for global filters (e.g., `/api/observations?patient_id=5&type=TEMPERATURE`) for analytics.
+- Observation trends and visual dashboards (temperature charts, BP over time).
+- Add `is_corrected` flag for invalidated readings.
+- Offline caching and sync retries for poor network areas.
+
+--
+
+## 11. DevOps & Process
 
 | Aspect | Implementation |
 |--------|----------------|
@@ -317,7 +373,7 @@ This design enables metrics such as:
 
 ---
 
-## 11. Tradeoffs & Design Decisions
+## 12. Tradeoffs & Design Decisions
 
 | Decision | Justification |
 |-----------|----------------|
@@ -328,7 +384,7 @@ This design enables metrics such as:
 
 ---
 
-## 12. Future Vision (If Given 6 More Months)
+## 13. Future Vision (If Given 6 More Months)
 
 - **Multi-clinic Management** — allow each clinic to manage its own patients and staff.
 - **Offline Mode with Sync** — local storage and synchronization queue for disconnected environments.
@@ -338,7 +394,7 @@ This design enables metrics such as:
 
 ---
 
-## 13. References
+## 14. References
 
 - Laravel Docs – [https://laravel.com/docs](https://laravel.com/docs)
 - Next.js Docs – [https://nextjs.org/docs](https://nextjs.org/docs)
@@ -346,7 +402,7 @@ This design enables metrics such as:
 
 ---
 
-## 14. Summary
+## 15. Summary
 
 > **MedAssist** is a lightweight Laravel + Next.js platform that helps rural nurses record consultations quickly and efficiently.  
 > It focuses on simplicity, maintainability, and real-world practicality — with a design that can evolve into a full clinic management platform in the next phase.
