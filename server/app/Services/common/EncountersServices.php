@@ -27,4 +27,9 @@ class EncountersServices
     {
         return Encounter::create($fields);
     }
+
+    public function getEncounter(int $id): ?Encounter
+    {
+        return Encounter::with('patient', 'user', 'observations', 'diagnoses', 'treatments')->find($id);
+    }
 }

@@ -54,4 +54,25 @@ class EncountersController extends Controller
             ], 500);
         }
     }
+
+    public function show(int $id)
+    {
+        try {
+            $encounter = $this->encountersServices->getEncounter($id);
+            if (! $encounter) {
+                return response()->json([
+                    'message' => 'Encounter not found',
+                ], 404);
+            }
+            return response()->json([
+                'encounter' => $encounter,
+            ], 200);
+        }
+        catch (Exception $e) {
+            return response()->json([
+                'message' => 'An error occurred while fetching encounter.',
+                'error'   => $e->getMessage(),
+            ], 500);
+        }
+    }
 }

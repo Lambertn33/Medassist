@@ -37,5 +37,8 @@ Route::prefix('common')->middleware('auth:sanctum')->group(function () {
     Route::controller(CommonEncountersController::class)->prefix('encounters')->group(function () {
         Route::get('/', 'index');
         Route::post('/', 'store');
+        Route::prefix('{id}')->group(function () {
+            Route::get('/', 'show');
+        });
     });
 });
