@@ -14,6 +14,9 @@ class UsersSeeder extends Seeder
      */
     public function run(): void
     {
+        foreach (User::get() as $user) {
+            $user->delete();
+        }
         $users = [
             [
                 'name' => 'Admin',
