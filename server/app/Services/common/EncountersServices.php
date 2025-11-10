@@ -22,4 +22,9 @@ class EncountersServices
 
         return $query->get();
     }
+
+    public function storeEncounter(array $fields): Encounter
+    {
+        return Encounter::create($fields);
+    }
 }

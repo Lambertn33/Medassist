@@ -27,4 +27,31 @@ class EncountersController extends Controller
             ], 500);
         }
     }
+
+    public function store(Request $request)
+    {
+        try {
+            $authUser = $request->user();
+            $fields = $request->validate([
+                'patient_id' => 'required|exists:patients,id',
+            ]);
+            $fields['user_id'] = $authUser->id;
+            $encounter = $this->encountersServices->storeEncounter($fields);
+            return response()->json([
+                'message' => 'Encounter created successfully',
+                'encounter' => $encounter,
+            ], 201);
+        } catch (ValidationException $e) {
+            return response()->json([
+                'message' => 'Validation failed',
+                'errors'  => $e->errors(),
+            ], 422);
+        }
+        catch (Exception $e) {
+            return response()->json([
+                'message' => 'An error occurred while creating encounter.',
+                'error'   => $e->getMessage(),
+            ], 500);
+        }
+    }
 }
