@@ -163,8 +163,68 @@ User creation uses standard validation in the controller:
 
 The `UsersService` encapsulates user listing/creation/retrieval logic, while the `UsersController` handles HTTP concerns (validation, responses, error codes).
 
+--
 
-## 8. DevOps & Process
+## 8. Patients Management
+
+### 8.1 Goals
+
+In many rural clinics, nurses or doctors must quickly register patients at the point of care before starting a consultation.  
+MedAssist exposes a simple Patients API to:
+
+- Register new patients quickly.
+- Search and view existing patients.
+- Update patient demographics when details change.
+- Allow only admins to delete patients (for data protection).
+
+Patients are a shared resource across all roles (admin, doctor, nurse), so the patients module lives under a common controller namespace and is reused by all.
+
+### 8.2 API Design
+
+Patients are managed via a REST-style JSON API under `/api/patients`:
+
+- `GET /api/patients?search=...`  
+  List patients, optionally filtered by `search` (matches first name, last name, national ID, or phone).
+
+- `POST /api/patients`  
+  Create a new patient record.
+
+- `GET /api/patients/{id}`  
+  View a single patient.
+
+- `PUT /api/patients/{id}`  
+  Update an existing patient.
+
+- `DELETE /api/patients/{id}`  
+  Delete a patient (soft delete if enabled on the model).
+
+Example fields for patients (MVP):
+
+- `first_name`, `last_name`
+- `national_id` : (16 digits)
+- `phone`
+- `date_of_birth`
+- `gender` (`MALE`, `FEMALE`)
+- `address`
+-  `phone`
+- `emergency_contact_name`,
+- `emergency_contact_phone`
+
+The logic is implemented with a **service + controller** pattern:
+
+- `PatientsService` contains querying, creation, update, and delete logic.
+- `PatientsController` handles HTTP concerns (validation, status codes, error handling).
+
+### 8.3 Access Control
+
+Access control is role-based and enforced via a custom `role` middleware plus `auth:sanctum`:
+
+- All endpoints require authentication.
+- **Create and edit (update)**: accessible all users: `admin`, `doctor`, and `nurse`.
+- **View/list**: accessible to all users (`admin`, `doctor`, `nurse`).
+- **Delete**: restricted to `admin` only.
+
+## 9. DevOps & Process
 
 | Aspect | Implementation |
 |--------|----------------|
@@ -177,7 +237,7 @@ The `UsersService` encapsulates user listing/creation/retrieval logic, while the
 
 ---
 
-## 9. Tradeoffs & Design Decisions
+## 10. Tradeoffs & Design Decisions
 
 | Decision | Justification |
 |-----------|----------------|
@@ -188,7 +248,7 @@ The `UsersService` encapsulates user listing/creation/retrieval logic, while the
 
 ---
 
-## 10. Future Vision (If Given 6 More Months)
+## 11. Future Vision (If Given 6 More Months)
 
 - **Multi-clinic Management** — allow each clinic to manage its own patients and staff.
 - **Offline Mode with Sync** — local storage and synchronization queue for disconnected environments.
@@ -198,7 +258,7 @@ The `UsersService` encapsulates user listing/creation/retrieval logic, while the
 
 ---
 
-## 11. References
+## 12. References
 
 - Laravel Docs – [https://laravel.com/docs](https://laravel.com/docs)
 - Next.js Docs – [https://nextjs.org/docs](https://nextjs.org/docs)
