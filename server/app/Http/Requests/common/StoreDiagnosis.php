@@ -3,9 +3,8 @@
 namespace App\Http\Requests\common;
 
 use Illuminate\Foundation\Http\FormRequest;
-use App\Models\Observation;
 
-class StoreObservation extends FormRequest
+class StoreDiagnosis extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,9 +23,9 @@ class StoreObservation extends FormRequest
     public function rules(): array
     {
         return [
-            'type' => 'required|string|in:' . implode(',', Observation::TYPES),
-            'value' => 'required|string',
-            'unit' => 'required|string',
+            'code' => 'required|string|max:255',
+            'label' => 'required|string|max:255',
+            'is_primary' => 'required|boolean',
         ];
     }
 }

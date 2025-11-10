@@ -9,6 +9,7 @@ use App\Http\Controllers\admin\UsersController as AdminUsersController;
 use App\Http\Controllers\common\PatientsController as CommonPatientsController;
 use App\Http\Controllers\common\EncountersController as CommonEncountersController;
 use App\Http\Controllers\common\ObservationsController as CommonObservationsController;
+use App\Http\Controllers\common\DiagnosesController as CommonDiagnosesController;
 
 // Auth Routes
 Route::controller(AuthController::class)->prefix('auth')->group(function () {
@@ -46,10 +47,13 @@ Route::prefix('common')->middleware('auth:sanctum')->group(function () {
             });
         });
 
-        Route::prefix('{encounterId}/observations')->group(function () {
-            Route::controller(CommonObservationsController::class)->group(function () {
+        Route::prefix('{encounterId}')->group(function () {
+            Route::controller(CommonObservationsController::class)->prefix('observations')->group(function () {
                 Route::get('/', 'index');
                 Route::post('/', 'store');
+            });
+            Route::controller(CommonDiagnosesController::class)->prefix('diagnoses')->group(function () {
+                Route::get('/', 'index');
             });
         });
     });
