@@ -10,9 +10,11 @@ COPY package.json package-lock.json* ./
 # Install dependencies
 RUN npm ci
 
-# Expose port
-EXPOSE 3000
+# Copy the rest of the application
+COPY . .
+
+# Expose Vite dev server port
+EXPOSE 5173
 
 # Default command (can be overridden by docker-compose)
-CMD ["npm", "run", "dev"]
-
+CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
