@@ -12,4 +12,10 @@ class TreatmentsServices
         ->orderBy('created_at', 'desc')
         ->get(['id', 'encounter_id', 'type', 'description', 'dosage', 'duration', 'notes']);
     }
+
+    public function storeTreatment(array $fields, int $encounterId): Treatment
+    {
+        $fields['encounter_id'] = $encounterId;
+        return Treatment::create($fields);
+    }
 }

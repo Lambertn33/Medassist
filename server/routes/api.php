@@ -59,6 +59,7 @@ Route::prefix('common')->middleware('auth:sanctum')->group(function () {
             });
             Route::controller(CommonTreatmentsController::class)->prefix('treatments')->group(function () {
                 Route::get('/', 'index');
+                Route::post('/', 'store');
             });
         });
     });
