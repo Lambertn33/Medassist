@@ -46,7 +46,7 @@ services:
     environment:
       NODE_ENV: development
       WATCHPACK_POLLING: "true"
-    command: npm run dev
+    command: sh -c "npm ci && npm run dev"
     depends_on:
       - server
 
