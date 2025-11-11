@@ -1,4 +1,27 @@
+'use client';
+
+import { login } from '@/lib/api/auth';
+import { useState } from 'react';
+
 export default function LoginForm() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const response = await login({ email, password });
+      console.log(response);
+    } catch (error: any) {
+      // setError(error.message || 'An error occurred');
+      console.log(error);
+    }
+    setLoading(false);
+  };
+
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full">
@@ -11,7 +34,7 @@ export default function LoginForm() {
               Enter your credentials to access the consultation assistant
             </p>
           </div>
-          <form className="space-y-6">
+          <form className="space-y-6" onSubmit={handleSubmit}>
             <div className="rounded-md shadow-sm -space-y-px space-y-6">
               <div>
                 <label htmlFor="email" className="sr-only">
