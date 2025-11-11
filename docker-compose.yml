@@ -36,10 +36,17 @@ services:
       dockerfile: Dockerfile
     container_name: medassist-client
     restart: unless-stopped
+    working_dir: /app
+    volumes:
+      - ./client:/app
+      - /app/node_modules
+      - /app/.next
     ports:
       - "3000:3000"
     environment:
-      NODE_ENV: production
+      NODE_ENV: development
+      WATCHPACK_POLLING: "true"
+    command: npm run dev
     depends_on:
       - server
 
