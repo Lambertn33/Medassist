@@ -405,7 +405,76 @@ All routes are protected by `auth:sanctum` and restricted to the `admin`, `docto
 
 --
 
-## 12. DevOps & Process
+## 12. Treatments Management
+
+### 12.1 Purpose
+
+Treatments represent the actions taken as a result of an encounter’s clinical assessment.  
+They can be medications, procedures, or counseling/advice given to the patient.
+
+Treatments are always linked to a specific encounter and are **append-only**: once recorded, they are not updated or deleted in the MVP.
+
+---
+
+### 12.2 Data Model
+
+| Field         | Type      | Description                                      |
+|--------------|-----------|--------------------------------------------------|
+| `id`         | integer   | Primary key                                      |
+| `encounter_id` | integer | Reference to the related encounter               |
+| `type`       | enum      | One of `MEDICATION`, `PROCEDURE`, `COUNSELING`   |
+| `description` | string   | Human-readable description of the treatment      |
+| `created_at` | datetime  | When the treatment was recorded                  |
+| `updated_at` | datetime  | Last modification timestamp (for audit)          |
+
+**Relationships:**
+
+- Each `Treatment` belongs to one `Encounter`.
+- An `Encounter` can have multiple treatments (e.g., multiple drugs, counseling + drug, etc.).
+
+---
+
+### 12.3 Access Control
+
+All authenticated clinical staff (`admin`, `doctor`, `nurse`) can create and view treatments for encounters.
+
+Treatments are append-only in the MVP: there are no update or delete operations to keep the medical record traceable.
+
+---
+
+### 12.4 Business Rules & Preconditions
+
+A **treatment cannot be created** for an encounter unless all of the following are true:
+
+1. The encounter **exists**.
+2. The encounter is in the **`in_progress`** state.
+3. The encounter has **at least one observation** recorded.
+4. The encounter has **at least one diagnosis** recorded.
+
+This enforces a realistic clinical workflow:
+
+- Vitals must be captured.
+- A diagnosis must be documented.
+- Only then can a treatment be prescribed or recorded.
+
+The encounter **can** be completed without a treatment (e.g., counseling-only visits), but any treatment that is created must respect the above preconditions.
+
+If any of the conditions are not met, the API returns HTTP `422` with an explanatory message.
+
+---
+
+### 12.5 Core Endpoints
+
+| Endpoint                                       | Method | Description                                    |
+|-----------------------------------------------|--------|------------------------------------------------|
+| `/api/encounters/{encounterId}/treatments`    | `GET`  | List all treatments for a given encounter.     |
+| `/api/encounters/{encounterId}/treatments`    | `POST` | Record a new treatment for the encounter.      |
+
+All routes are protected by `auth:sanctum` and require `admin`, `doctor`, or `nurse` roles.
+
+---
+
+## 13. DevOps & Process
 
 | Aspect | Implementation |
 |--------|----------------|
@@ -418,7 +487,7 @@ All routes are protected by `auth:sanctum` and restricted to the `admin`, `docto
 
 ---
 
-## 13. Tradeoffs & Design Decisions
+## 14. Tradeoffs & Design Decisions
 
 | Decision | Justification |
 |-----------|----------------|
@@ -429,7 +498,7 @@ All routes are protected by `auth:sanctum` and restricted to the `admin`, `docto
 
 ---
 
-## 14. Future Vision (If Given 6 More Months)
+## 15. Future Vision (If Given 6 More Months)
 
 - **Multi-clinic Management** — allow each clinic to manage its own patients and staff.
 - **Offline Mode with Sync** — local storage and synchronization queue for disconnected environments.
@@ -439,7 +508,7 @@ All routes are protected by `auth:sanctum` and restricted to the `admin`, `docto
 
 ---
 
-## 15. References
+## 16. References
 
 - Laravel Docs – [https://laravel.com/docs](https://laravel.com/docs)
 - Next.js Docs – [https://nextjs.org/docs](https://nextjs.org/docs)
@@ -447,7 +516,7 @@ All routes are protected by `auth:sanctum` and restricted to the `admin`, `docto
 
 ---
 
-## 16. Summary
+## 17. Summary
 
 > **MedAssist** is a lightweight Laravel + Next.js platform that helps rural nurses record consultations quickly and efficiently.  
 > It focuses on simplicity, maintainability, and real-world practicality — with a design that can evolve into a full clinic management platform in the next phase.
