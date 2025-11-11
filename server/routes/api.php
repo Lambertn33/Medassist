@@ -10,6 +10,7 @@ use App\Http\Controllers\common\PatientsController as CommonPatientsController;
 use App\Http\Controllers\common\EncountersController as CommonEncountersController;
 use App\Http\Controllers\common\ObservationsController as CommonObservationsController;
 use App\Http\Controllers\common\DiagnosesController as CommonDiagnosesController;
+use App\Http\Controllers\common\TreatmentsController as CommonTreatmentsController;
 
 // Auth Routes
 Route::controller(AuthController::class)->prefix('auth')->group(function () {
@@ -55,6 +56,9 @@ Route::prefix('common')->middleware('auth:sanctum')->group(function () {
             Route::controller(CommonDiagnosesController::class)->prefix('diagnoses')->group(function () {
                 Route::get('/', 'index');
                 Route::post('/', 'store');
+            });
+            Route::controller(CommonTreatmentsController::class)->prefix('treatments')->group(function () {
+                Route::get('/', 'index');
             });
         });
     });
