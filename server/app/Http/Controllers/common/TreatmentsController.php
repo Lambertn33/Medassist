@@ -33,6 +33,11 @@ class TreatmentsController extends Controller
     {
         try {
             $fields = $request->validated();
+            if (! $this->treatmentsServices->canTreatmentBeCreated($encounterId)) {
+                return response()->json([
+                    'message' => 'Cannot create treatment. Encounter is not in progress or has no observations or diagnoses.',
+                ], 400);
+            }
             $treatment = $this->treatmentsServices->storeTreatment($fields, $encounterId);
             return response()->json([
                 'message' => 'Treatment created successfully',

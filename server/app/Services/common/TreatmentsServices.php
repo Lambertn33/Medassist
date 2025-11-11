@@ -3,6 +3,7 @@
 namespace App\Services\common;
 
 use App\Models\Treatment;
+use App\Models\Encounter;
 
 class TreatmentsServices
 {
@@ -17,5 +18,23 @@ class TreatmentsServices
     {
         $fields['encounter_id'] = $encounterId;
         return Treatment::create($fields);
+    }
+
+    public function canTreatmentBeCreated(int $encounterId): bool
+    {
+        $encounter = Encounter::find($encounterId);
+        if (! $encounter) {
+            return false;
+        }
+        if ($encounter->status !== Encounter::STATUS_IN_PROGRESS) {
+            return false;
+        }
+        if ($encounter->observations()->count() === 0) {
+            return false;
+        }
+        if ($encounter->diagnoses()->count() === 0) {
+            return false;
+        }
+        return true;
     }
 }
