@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Modal, Input, Button, Select } from '@/components';
 
 interface PatientFormProps {
@@ -32,18 +32,7 @@ export const PatientForm = ({ isOpen, onClose, onSubmit }: PatientFormProps) => 
     emergency_contact_phone: '',
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onSubmit?.(formData);
-    // Reset form
+  const resetForm = () => {
     setFormData({
       first_name: '',
       last_name: '',
@@ -55,7 +44,26 @@ export const PatientForm = ({ isOpen, onClose, onSubmit }: PatientFormProps) => 
       emergency_contact_name: '',
       emergency_contact_phone: '',
     });
-    onClose();
+  };
+
+  // Reset form when modal closes
+  useEffect(() => {
+    if (!isOpen) {
+      resetForm();
+    }
+  }, [isOpen]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSubmit?.(formData);
   };
 
   return (
@@ -148,6 +156,7 @@ export const PatientForm = ({ isOpen, onClose, onSubmit }: PatientFormProps) => 
               label="Gender"
               additionalClasses="w-full"
               options={[
+                { value: '', label: 'Select gender' },
                 { value: 'MALE', label: 'Male' },
                 { value: 'FEMALE', label: 'Female' },
               ]}

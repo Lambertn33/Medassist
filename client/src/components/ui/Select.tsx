@@ -24,7 +24,7 @@ export const Select = ({ name, id, value, onChange, disabled, label, additionalC
         disabled={disabled}
       >
         {options.map((option: { value: string; label: string }) => (
-          <option key={option.value} value={option.value}>
+          <option key={option.value} value={option.value} disabled={option.value === ''}>
             {option.label}
           </option>
         ))}
