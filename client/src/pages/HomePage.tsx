@@ -1,3 +1,40 @@
+import HomeCard from "../components/Home/HomeCard.tsx";
+import { FaUser, FaStethoscope, FaChartLine, FaPrescriptionBottle, FaUserMd } from "react-icons/fa";
+import { MdOutlineTrackChanges } from "react-icons/md";
+import type { IFeature } from "../interfaces/Home/IFeature.ts";
+
+const features: IFeature[] = [
+  {
+    title: "Patient Management",
+    description: "Efficiently record and manage patient information and demographics",
+    icon: <FaUser />,
+  },
+  {
+    title: "Encounter Tracking",
+    description: "Track consultation progress from initialization to completion",
+    icon: <MdOutlineTrackChanges />,
+  },
+  {
+    title: "Observations & Diagnoses",
+    description: "Record vital signs, observations, and diagnoses seamlessly",
+    icon: <FaStethoscope />,
+  },
+  {
+    title: "Treatments & Prescriptions",
+    description: "Record treatments and prescriptions for patients",
+    icon: <FaPrescriptionBottle />,
+  },
+  {
+    title: "Analytics & Reporting",
+    description: "Generate reports and analytics for patient consultations",
+    icon: <FaChartLine />,
+  },
+  {
+    title: "Patient Follow-up",
+    description: "Track patient follow-up and ensure they receive the necessary care",
+    icon: <FaUserMd />,
+  },
+];
 const HomePage = () => {
   return (
     <div className="min-h-screen pt-20">
@@ -14,35 +51,10 @@ const HomePage = () => {
 
         {/* Features Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
-          <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
-            <div className="text-blue-600 text-4xl mb-4">👥</div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">
-              Patient Management
-            </h3>
-            <p className="text-gray-600">
-              Efficiently record and manage patient information and demographics
-            </p>
-          </div>
+          {features.map((feature) => (
+            <HomeCard key={feature.title} {...feature} />
+          ))}
 
-          <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
-            <div className="text-blue-600 text-4xl mb-4">📋</div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">
-              Encounter Tracking
-            </h3>
-            <p className="text-gray-600">
-              Track consultation progress from initialization to completion
-            </p>
-          </div>
-
-          <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
-            <div className="text-blue-600 text-4xl mb-4">📊</div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">
-              Observations & Diagnoses
-            </h3>
-            <p className="text-gray-600">
-              Record vital signs, observations, and diagnoses seamlessly
-            </p>
-          </div>
         </div>
 
         {/* CTA Section */}
