@@ -1,7 +1,7 @@
-import HomeCard from "../components/Home/HomeCard.tsx";
+import HomeCard from "@/components/Home/HomeCard";
 import { FaUser, FaStethoscope, FaChartLine, FaPrescriptionBottle, FaUserMd } from "react-icons/fa";
 import { MdOutlineTrackChanges } from "react-icons/md";
-import type { IFeature } from "../interfaces/Home/IFeature.ts";
+import type { IFeature } from "@/interfaces/Home/IFeature";
 
 const features: IFeature[] = [
   {
