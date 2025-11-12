@@ -7,5 +7,8 @@ import { Navbar } from './navbar/Navbar';
 
 import { Button } from './ui/Button';
 import { Input } from './ui/Input';
+import { Loader } from './ui/Loader';
+import { ProtectedRoute } from './auth/ProtectedRoute';
+import { PublicRoute } from './auth/PublicRoute';
 
-export { LoginForm, LoginHeader, Button, Input, Navbar, HomeCard };
+export { LoginForm, LoginHeader, Button, Input, Navbar, HomeCard, ProtectedRoute, PublicRoute, Loader };

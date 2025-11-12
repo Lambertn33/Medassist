@@ -4,7 +4,7 @@ import { useLogin } from '@/hooks/useAuth';
 import { LoginForm } from '@/components/login/LoginForm';
 import { LoginHeader } from '@/components/login/LoginHeader';
 
-const LoginPage = () => {
+export const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
@@ -23,7 +23,7 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen pt-20 flex items-center justify-center px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
 
         {/* Header */}
@@ -44,6 +44,3 @@ const LoginPage = () => {
     </div>
   );
 };
-
-export default LoginPage;
-
