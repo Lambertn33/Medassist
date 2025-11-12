@@ -27,7 +27,11 @@ class DashboardController extends Controller
         $diagnoses = Diagnosis::count();
         $treatments = Treatment::count();
 
-        $todayEncounters = Encounter::whereDate('created_at', now()->toDateString())->with('patient', 'user')->get(['id', 'patient_id', 'user_id', 'status', 'started_at', 'ended_at', 'summary']);
+        $todayEncounters =
+         Encounter::with('patient', 'user')
+         ->limit(5)
+         ->orderBy('started_at', 'desc')
+         ->get(['id', 'patient_id', 'user_id', 'status', 'started_at', 'ended_at', 'summary']);
 
         return response()->json([
             'patients' => $patients,

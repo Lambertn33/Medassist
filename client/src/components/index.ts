@@ -11,6 +11,7 @@ import { Loader } from './ui/Loader';
 import { ProtectedRoute } from './auth/ProtectedRoute';
 import { PublicRoute } from './auth/PublicRoute';
 
-import { DashboardCard } from './dashboard/DashboardCard';
+import { TotalsOverview } from './dashboard/TotalsOverview';
+import { TodayEncounters } from './dashboard/TodayEncounters';
 
-export { LoginForm, LoginHeader, Button, Input, Navbar, HomeCard, ProtectedRoute, PublicRoute, Loader, DashboardCard };
+export { LoginForm, LoginHeader, Button, Input, Navbar, HomeCard, ProtectedRoute, PublicRoute, Loader, TotalsOverview, TodayEncounters };

@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 
-interface DashboardCardProps {
+interface CardProps {
   title: string;
   value: string | number;
   icon: ReactNode;
@@ -8,13 +8,13 @@ interface DashboardCardProps {
   iconBgColor?: string;
 }
 
-export const DashboardCard = ({
+export const Card = ({
   title,
   value,
   icon,
   bgColor = 'bg-green-50',
   iconBgColor = 'bg-green-500',
-}: DashboardCardProps) => {
+}: CardProps) => {
   return (
     <div className={`${bgColor} p-6 rounded-lg shadow-sm flex items-center gap-4`}>
       {/* Icon Circle */}

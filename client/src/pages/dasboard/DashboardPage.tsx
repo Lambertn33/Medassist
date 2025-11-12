@@ -1,7 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { getDashboardData } from '@/api/dashboard';
-import { Loader } from '@/components';
-import { DashboardCards } from '@/components/dashboard/DashboardCards';
+import { Loader, TotalsOverview, TodayEncounters } from '@/components';
 import type { IDashboardData } from '@/interfaces/dashboard/IDashboardData';
 
 export const DashboardPage = () => {
@@ -13,14 +12,20 @@ export const DashboardPage = () => {
     return (
         <div className="min-h-screen">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                <h1 className="text-3xl font-bold text-gray-900 mb-6">Dashboard</h1>
+                <h1 className="text-3xl font-bold text-blue-600 mb-6">Dashboard</h1>
                 
                 {isLoading ? 
                 <div className="flex justify-center items-center">
                     <Loader />
                 </div> : error ?
                  <div className="text-red-500 font-bold text-center"> {error instanceof Error ? error.message : 'An unexpected error occurred'}</div> 
-                 : <DashboardCards data={data} />}
+                 : <div className="flex flex-col gap-6">
+                    <TotalsOverview data={data} />
+                    <div className="flex flex-col gap-6">
+                        <h2 className="text-3xl font-bold text-blue-600 mb-4">Today's Encounters</h2>
+                        <TodayEncounters data={data} />
+                    </div>
+                </div>}
             </div>
         </div>
     )
