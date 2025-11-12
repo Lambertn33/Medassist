@@ -1,4 +1,5 @@
 import type { IPatient } from '@/interfaces/patients/IPatient';
+import { PatientsSearch } from '@/components';
 
 export const PatientsList = ({ patients }: { patients: IPatient[] }) => {
   if (patients.length === 0) {
@@ -20,7 +21,11 @@ export const PatientsList = ({ patients }: { patients: IPatient[] }) => {
 
   return (
     <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+
       <div className="overflow-x-auto">
+        <div className="my-4 mx-6 flex justify-end">
+          <PatientsSearch />
+        </div>
         <table className="w-full text-sm text-left text-gray-500">
           <thead className="text-xs text-gray-700 uppercase bg-gray-50 border-b border-gray-200">
             <tr>

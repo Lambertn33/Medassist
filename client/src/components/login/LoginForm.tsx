@@ -36,6 +36,7 @@ export const LoginForm = ({ handleSubmit, loginMutation, email, setEmail, passwo
               disabled={loginMutation.isPending}
               placeholder="Enter your email"
               label="Email Address"
+              additionalClasses="w-full"
             />
 
             {/* Password Field */}
@@ -50,6 +51,7 @@ export const LoginForm = ({ handleSubmit, loginMutation, email, setEmail, passwo
               disabled={loginMutation.isPending}
               placeholder="Enter your password"
               label="Password"
+              additionalClasses="w-full"
             />
 
             {/* Submit Button */}

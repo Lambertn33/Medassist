@@ -15,5 +15,6 @@ import { TotalsOverview } from './dashboard/TotalsOverview';
 import { LatestEncounters } from './dashboard/LatestEncounters'  ;
 
 import { PatientsList } from './patients/PatientsList';
+import { PatientsSearch } from './patients/PatientsSearch';
 
-export { LoginForm, LoginHeader, Button, Input, Navbar, HomeCard, ProtectedRoute, PublicRoute, Loader, TotalsOverview, LatestEncounters, PatientsList };
+export { LoginForm, LoginHeader, Button, Input, Navbar, HomeCard, ProtectedRoute, PublicRoute, Loader, TotalsOverview, LatestEncounters, PatientsList, PatientsSearch };
