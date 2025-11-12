@@ -1,6 +1,7 @@
 import { HomePage } from './HomePage';
 import { LoginPage } from './LoginPage';
 
-import { DashboardPage } from './dasboard/DashboardPage';
+import { DashboardLayout, DashboardIndex } from './dashboard/DashboardPage';
+import { PatientsPage } from './patients/PatientsPage';
 
-export { HomePage, LoginPage, DashboardPage  };
+export { HomePage, LoginPage, DashboardLayout, DashboardIndex, PatientsPage };

@@ -2,40 +2,46 @@ import { HomeCard } from "@/components";
 import { FaUser, FaStethoscope, FaChartLine, FaPrescriptionBottle, FaUserMd } from "react-icons/fa";
 import { MdOutlineTrackChanges } from "react-icons/md";
 import type { IFeature } from "@/interfaces/home/IFeature";
+import { Link } from "react-router";
+import { useAuth } from '@/hooks/useAuth';
 
-const features: IFeature[] = [
-  {
-    title: "Patient Management",
-    description: "Efficiently record and manage patient information and demographics",
-    icon: <FaUser />,
-  },
-  {
-    title: "Encounter Tracking",
-    description: "Track consultation progress from initialization to completion",
-    icon: <MdOutlineTrackChanges />,
-  },
-  {
-    title: "Observations & Diagnoses",
-    description: "Record vital signs, observations, and diagnoses seamlessly",
-    icon: <FaStethoscope />,
-  },
-  {
-    title: "Treatments & Prescriptions",
-    description: "Record treatments and prescriptions for patients",
-    icon: <FaPrescriptionBottle />,
-  },
-  {
-    title: "Analytics & Reporting",
-    description: "Generate reports and analytics for patient consultations",
-    icon: <FaChartLine />,
-  },
-  {
-    title: "Patient Follow-up",
-    description: "Track patient follow-up and ensure they receive the necessary care",
-    icon: <FaUserMd />,
-  },
-];
+
 export const HomePage = () => {
+  const { isAuthenticated } = useAuth();
+
+  const features: IFeature[] = [
+    {
+      title: "Patient Management",
+      description: "Efficiently record and manage patient information and demographics",
+      icon: <FaUser />,
+    },
+    {
+      title: "Encounter Tracking",
+      description: "Track consultation progress from initialization to completion",
+      icon: <MdOutlineTrackChanges />,
+    },
+    {
+      title: "Observations & Diagnoses",
+      description: "Record vital signs, observations, and diagnoses seamlessly",
+      icon: <FaStethoscope />,
+    },
+    {
+      title: "Treatments & Prescriptions",
+      description: "Record treatments and prescriptions for patients",
+      icon: <FaPrescriptionBottle />,
+    },
+    {
+      title: "Analytics & Reporting",
+      description: "Generate reports and analytics for patient consultations",
+      icon: <FaChartLine />,
+    },
+    {
+      title: "Patient Follow-up",
+      description: "Track patient follow-up and ensure they receive the necessary care",
+      icon: <FaUserMd />,
+    },
+  ];
+
   return (
     <div className="min-h-screen pt-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -61,14 +67,14 @@ export const HomePage = () => {
         <div className="bg-blue-600 rounded-lg shadow-lg p-8 text-center text-white">
           <h2 className="text-3xl font-bold mb-4">Get Started</h2>
           <p className="text-lg mb-6 text-blue-100">
-            Sign in to access the consultation assistant
+            {isAuthenticated ? 'Go to Dashboard' : 'Sign in to access the consultation assistant'}
           </p>
-          <a
-            href="/login"
+          <Link
+            to={isAuthenticated ? '/dashboard' : '/login'}
             className="inline-block bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
           >
-            Authenticate
-          </a>
+            {isAuthenticated ? 'Go to Dashboard' : 'Sign in'}
+          </Link>
         </div>
       </div>
     </div>

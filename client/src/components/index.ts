@@ -11,4 +11,9 @@ import { Loader } from './ui/Loader';
 import { ProtectedRoute } from './auth/ProtectedRoute';
 import { PublicRoute } from './auth/PublicRoute';
 
-export { LoginForm, LoginHeader, Button, Input, Navbar, HomeCard, ProtectedRoute, PublicRoute, Loader };
+import { TotalsOverview } from './dashboard/TotalsOverview';
+import { LatestEncounters } from './dashboard/LatestEncounters'  ;
+
+import { PatientsList } from './patients/PatientsList';
+
+export { LoginForm, LoginHeader, Button, Input, Navbar, HomeCard, ProtectedRoute, PublicRoute, Loader, TotalsOverview, LatestEncounters, PatientsList };
