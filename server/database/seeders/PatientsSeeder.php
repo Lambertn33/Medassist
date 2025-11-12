@@ -17,7 +17,7 @@ class PatientsSeeder extends Seeder
             $patient->delete();
         }
 
-        for ($i = 0; $i < 10; $i++) {
+        for ($i = 0; $i < 5; $i++) {
             Patient::create([
                 'first_name' => 'Patient ' . $i,
                 'last_name' => 'Patient ' . $i,
