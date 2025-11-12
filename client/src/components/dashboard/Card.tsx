@@ -16,7 +16,7 @@ export const Card = ({
   iconBgColor = 'bg-green-500',
 }: CardProps) => {
   return (
-    <div className={`${bgColor} p-6 rounded-lg shadow-sm flex items-center gap-4`}>
+    <div className={`${bgColor} p-6 rounded-lg shadow-sm flex items-center gap-4 hover:shadow-md transition-shadow cursor-default`}>
       {/* Icon Circle */}
       <div className={`${iconBgColor} w-20 h-20 rounded-full flex items-center justify-center flex-shrink-0`}>
         <div className="text-white text-2xl">

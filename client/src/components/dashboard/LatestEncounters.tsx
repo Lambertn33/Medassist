@@ -54,7 +54,7 @@ export const LatestEncounters = ({ data }: LatestEncountersProps) => {
   if (encounters.length === 0) {
     return (
       <div className="bg-white rounded-lg shadow-sm p-8 text-center">
-        <p className="text-gray-500 text-lg">No encounters found for today</p>
+        <p className="text-gray-500 text-lg">No encounters found</p>
       </div>
     );
   }
@@ -86,7 +86,7 @@ export const LatestEncounters = ({ data }: LatestEncountersProps) => {
             {encounters.map((encounter) => (
               <tr
                 key={encounter.id}
-                className="bg-white hover:bg-gray-50 transition-colors"
+                className="bg-white hover:bg-blue-50 transition-colors cursor-pointer"
               >
                 <th
                   scope="row"
@@ -104,7 +104,11 @@ export const LatestEncounters = ({ data }: LatestEncountersProps) => {
                   {formatDate(encounter.started_at)}
                 </td>
                 <td className="px-6 py-4 text-gray-700">
-                  {encounter.summary || (
+                  {encounter.summary ? (
+                    <span className="truncate block max-w-xs" title={encounter.summary}>
+                      {encounter.summary}
+                    </span>
+                  ) : (
                     <span className="text-gray-400 italic">No summary</span>
                   )}
                 </td>
