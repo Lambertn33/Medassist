@@ -1,11 +1,26 @@
-import type { IDashboardData } from '@/interfaces/dashboard/IDashboardData';
-
-interface TodayEncountersProps {
-  data?: IDashboardData;
+interface LatestEncountersProps {
+  data?: {
+    id: number;
+    patient_id: number;
+    user_id: number;
+    status: string;
+    started_at: string;
+    ended_at: string;
+    summary: string;
+    patient: {
+      id: number;
+      first_name: string;
+      last_name: string;
+    };
+    user: {
+      id: number;
+      name: string;
+    };
+  }[];
 }
 
-export const TodayEncounters = ({ data }: TodayEncountersProps) => {
-  const encounters = data?.todayEncounters || [];
+export const LatestEncounters = ({ data }: LatestEncountersProps) => {
+  const encounters = data || [];
 
   const getStatusBadge = (status: string) => {
     const statusColors: Record<string, string> = {
@@ -101,5 +116,3 @@ export const TodayEncounters = ({ data }: TodayEncountersProps) => {
     </div>
   );
 };
-
-export default TodayEncounters;

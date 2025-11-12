@@ -12,6 +12,6 @@ import { ProtectedRoute } from './auth/ProtectedRoute';
 import { PublicRoute } from './auth/PublicRoute';
 
 import { TotalsOverview } from './dashboard/TotalsOverview';
-import { TodayEncounters } from './dashboard/TodayEncounters';
+import { LatestEncounters } from './dashboard/LatestEncounters'  ;
 
-export { LoginForm, LoginHeader, Button, Input, Navbar, HomeCard, ProtectedRoute, PublicRoute, Loader, TotalsOverview, TodayEncounters };
+export { LoginForm, LoginHeader, Button, Input, Navbar, HomeCard, ProtectedRoute, PublicRoute, Loader, TotalsOverview, LatestEncounters };

@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { getDashboardData } from '@/api/dashboard';
-import { Loader, TotalsOverview, TodayEncounters } from '@/components';
+import { Loader, TotalsOverview, LatestEncounters } from '@/components';
 import type { IDashboardData } from '@/interfaces/dashboard/IDashboardData';
 
 export const DashboardPage = () => {
@@ -22,8 +22,8 @@ export const DashboardPage = () => {
                  : <div className="flex flex-col gap-6">
                     <TotalsOverview data={data} />
                     <div className="flex flex-col gap-6">
-                        <h2 className="text-3xl font-bold text-blue-600 mb-4">Today's Encounters</h2>
-                        <TodayEncounters data={data} />
+                        <h2 className="text-3xl font-bold text-blue-600 mb-4">Latest Encounters</h2>
+                        <LatestEncounters data={data?.todayEncounters || []} />
                     </div>
                 </div>}
             </div>
