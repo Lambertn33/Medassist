@@ -24,7 +24,7 @@ export const PatientDetailsPage = () => {
             queryClient.invalidateQueries({ queryKey: ['patient', id] });
             queryClient.invalidateQueries({ queryKey: ['patients'] });
             setIsEditModalOpen(false);
-            const message = data?.message as string || 'Patient updated successfully';
+            const message = data?.message as string;
             setToastMessage(message);
             setShowToast(true);
             setTimeout(() => {
