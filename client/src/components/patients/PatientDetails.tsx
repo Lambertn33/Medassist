@@ -4,7 +4,12 @@ import { PatientDetailsInfo, PatientDetailsEncounters, Card } from '@/components
 
 import { Link } from 'react-router';
 
-export const PatientDetails = ({ patientDetails }: { patientDetails: IPatientDetails }) => {
+interface PatientDetailsProps {
+  patientDetails: IPatientDetails;
+  onEdit?: () => void;
+}
+
+export const PatientDetails = ({ patientDetails, onEdit }: PatientDetailsProps) => {
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -23,7 +28,10 @@ export const PatientDetails = ({ patientDetails }: { patientDetails: IPatientDet
             <Link to="/dashboard/patients" className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition-colors font-medium">
               Back
             </Link>
-            <button className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors font-medium">
+            <button 
+              onClick={onEdit}
+              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors font-medium"
+            >
               Edit
             </button>
           </div>

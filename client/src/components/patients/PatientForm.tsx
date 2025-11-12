@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Modal, Input, Button, Select } from '@/components';
-import type { IPatientFormData } from '@/interfaces/patients/IPatient';
+import type { IPatientFormData, IPatientDetails } from '@/interfaces/patients/IPatient';
 
 interface PatientFormProps {
   isOpen: boolean;
@@ -8,9 +8,19 @@ interface PatientFormProps {
   onSubmit?: (data: IPatientFormData) => void;
   error?: Error | null;
   isLoading?: boolean;
+  isEditing?: boolean;
+  patientData?: IPatientDetails | null;
 }
 
-export const PatientForm = ({ isOpen, onClose, onSubmit, error, isLoading = false }: PatientFormProps) => {
+export const PatientForm = ({ 
+  isOpen, 
+  onClose, 
+  onSubmit, 
+  error, 
+  isLoading = false,
+  isEditing = false,
+  patientData = null
+}: PatientFormProps) => {
   const [formData, setFormData] = useState<IPatientFormData>({
     first_name: '',
     last_name: '',
@@ -37,12 +47,39 @@ export const PatientForm = ({ isOpen, onClose, onSubmit, error, isLoading = fals
     });
   };
 
-  // Reset form when modal closes
+  // Populate form when editing or reset when modal closes
   useEffect(() => {
-    if (!isOpen) {
+    if (isOpen) {
+      if (isEditing && patientData) {
+        // Format date for date input (YYYY-MM-DD)
+        const formatDateForInput = (dateString: string | null | undefined): string => {
+          if (!dateString) return '';
+          const date = new Date(dateString);
+          if (isNaN(date.getTime())) return '';
+          return date.toISOString().split('T')[0];
+        };
+
+        // Populate form with patient data
+        setFormData({
+          first_name: patientData.first_name || '',
+          last_name: patientData.last_name || '',
+          gender: patientData.gender || '',
+          date_of_birth: formatDateForInput(patientData.date_of_birth),
+          phone: patientData.phone || '',
+          national_id: patientData.national_id || '',
+          address: patientData.address || '',
+          emergency_contact_name: patientData.emergency_contact_name || '',
+          emergency_contact_phone: patientData.emergency_contact_phone || '',
+        });
+      } else {
+        // Reset form for new patient
+        resetForm();
+      }
+    } else {
+      // Reset form when modal closes
       resetForm();
     }
-  }, [isOpen]);
+  }, [isOpen, isEditing, patientData]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -78,7 +115,7 @@ export const PatientForm = ({ isOpen, onClose, onSubmit, error, isLoading = fals
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Create New Patient">
+    <Modal isOpen={isOpen} onClose={onClose} title={isEditing ? "Edit Patient" : "Create New Patient"}>
       <form className="p-4 md:p-5" onSubmit={handleSubmit}>
         <div className="grid gap-4 mb-4 grid-cols-2">
           <div className="col-span-2 sm:col-span-1">
@@ -239,7 +276,7 @@ export const PatientForm = ({ isOpen, onClose, onSubmit, error, isLoading = fals
           loading={isLoading} 
           className="w-full md:w-auto bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors font-medium"
         >
-          Add Patient
+          {isEditing ? 'Update Patient' : 'Add Patient'}
         </Button>
       </form>
     </Modal>

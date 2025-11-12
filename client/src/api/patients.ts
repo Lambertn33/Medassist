@@ -70,6 +70,34 @@ export const createPatient = async (patientData: IPatientFormData) => {
   }
 };
 
+export const updatePatient = async (id: number, patientData: IPatientFormData) => {
+  const token = localStorage.getItem('auth_token');
+  if (!token) {
+    throw new Error('No token found. Please login to update patients.');
+  }
+
+  try {
+    const response = await axios.put(
+      `${API_URL}/common/patients/${id}`,
+      patientData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response) {
+      const errorMessage = error.response.data?.message || 'Failed to update patient';
+      const errors = error.response.data?.errors;
+      throw new Error(errors ? JSON.stringify(errors) : errorMessage);
+    }
+    throw error;
+  }
+};
+
 export const deletePatient = async (id: number) => {
   const token = localStorage.getItem('auth_token');
   if (!token) {
