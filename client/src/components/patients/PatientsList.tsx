@@ -1,9 +1,10 @@
-import type { IPatient } from '@/interfaces/patients/IPatient';
+import { Link } from 'react-router';
+import type { IPatientBase } from '@/interfaces/patients/IPatient';
 import { PatientsSearch, Loader } from '@/components';
 import { formatDate } from '@/utils';
 
 interface PatientsListProps {
-  patients: IPatient[];
+  patients: IPatientBase[];
   searchValue: string;
   onSearchChange: (value: string) => void;
   isLoading?: boolean;
@@ -85,9 +86,12 @@ export const PatientsList = ({
                     {patient.encounters_count || 0}
                   </td>
                   <td className="px-6 py-4">
-                    <button className="px-4 py-2 cursor-pointer bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors font-medium">
+                    <Link
+                      to={`/dashboard/patients/${patient.id}`}
+                      className="inline-block px-4 py-2 cursor-pointer bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors font-medium"
+                    >
                       View
-                    </button>
+                    </Link>
                   </td>
                 </tr>
               ))

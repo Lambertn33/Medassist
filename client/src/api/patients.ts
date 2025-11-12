@@ -19,6 +19,28 @@ export const getPatients = async (search: string | null = null) => {
   return response.data;
 };
 
+export const getPatient = async (id: number) => {
+  const token = localStorage.getItem('auth_token');
+  if (!token) {
+    throw new Error('No token found. Please login to access patient details.');
+  }
+
+  try {
+    const response = await axios.get(`${API_URL}/common/patients/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response) {
+      const message = error.response.data?.message || 'Failed to fetch patient details';
+      throw new Error(message);
+    }
+    throw error;
+  }
+};
+
 export const createPatient = async (patientData: PatientFormData) => {
   const token = localStorage.getItem('auth_token');
   if (!token) {

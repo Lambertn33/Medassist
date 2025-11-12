@@ -1,5 +1,5 @@
 import { Routes, Route } from 'react-router';
-import { HomePage, LoginPage, DashboardLayout, DashboardIndex, PatientsPage } from '@/pages';
+import { HomePage, LoginPage, DashboardLayout, DashboardIndex, PatientsPage, PatientDetailsPage } from '@/pages';
 import { PublicRoute, ProtectedRoute } from '@/components';
 
 const AppRoutes = () => {
@@ -26,6 +26,7 @@ const AppRoutes = () => {
       >
         <Route index element={<DashboardIndex />} />
         <Route path="patients" element={<PatientsPage />} />
+        <Route path="patients/:id" element={<PatientDetailsPage />} />
       </Route>
     </Routes>
   );

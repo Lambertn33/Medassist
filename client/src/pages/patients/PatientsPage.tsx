@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getPatients, createPatient } from '@/api/patients';
-import type { IPatient } from '@/interfaces/patients/IPatient';
+import type { IPatientBase } from '@/interfaces/patients/IPatient';
 import { Button, PatientsList, PatientForm, Toast } from '@/components';
 import type { IPatientFormData } from '@/interfaces/patients/IPatient';
 
@@ -22,7 +22,7 @@ export const PatientsPage = () => {
     }, [inputValue]);
 
     // Get patients list
-    const { data, isLoading, error } = useQuery<{ patients: IPatient[] }>({
+    const { data, isLoading, error } = useQuery<{ patients: IPatientBase[] }>({
         queryKey: ['patients', searchTerm],
         queryFn: () => getPatients(searchTerm || null),
     });
