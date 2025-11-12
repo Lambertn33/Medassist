@@ -1,10 +1,11 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router';
 import NavLink from '@/components/navbar/NavLink';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth, useLogout } from '@/hooks/useAuth';
 
 export const Navbar = () => {
-  const { isAuthenticated, user, logout } = useAuth();
+  const { isAuthenticated, user } = useAuth();
+  const logoutMutation = useLogout();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
@@ -27,9 +28,12 @@ export const Navbar = () => {
   }, [isDropdownOpen]);
 
   const handleLogout = () => {
-    logout();
-    navigate('/');
-    setIsDropdownOpen(false);
+    logoutMutation.mutate(undefined, {
+      onSuccess: () => {
+        navigate('/');
+        setIsDropdownOpen(false);
+      },
+    });
   };
 
   return (

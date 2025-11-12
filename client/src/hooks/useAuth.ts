@@ -1,6 +1,6 @@
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuthContext, type User } from '@/contexts/AuthContext';
-import { login } from '@/api/auth';
+import { login, logout as logoutApi } from '@/api/auth';
 
 interface LoginCredentials {
   email: string;
@@ -29,6 +29,26 @@ export const useLogin = () => {
     },
     onError: (error) => {
       console.error('Login failed:', error);
+    },
+  });
+};
+
+export const useLogout = () => {
+  const { logout: logoutContext } = useAuthContext();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async () => {
+      await logoutApi();
+    },
+    onSuccess: () => {
+      logoutContext();
+      queryClient.clear();
+    },
+    onError: (error) => {
+      console.error('Logout failed:', error);
+      logoutContext();
+      queryClient.clear();
     },
   });
 };
