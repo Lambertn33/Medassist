@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { API_URL } from './constants';
-import type { PatientFormData } from '@/components/patients/PatientForm';
+import type { IPatientFormData } from '@/interfaces/patients/IPatient';
 
 export const getPatients = async (search: string | null = null) => {
   const token = localStorage.getItem('auth_token');
@@ -41,7 +41,7 @@ export const getPatient = async (id: number) => {
   }
 };
 
-export const createPatient = async (patientData: PatientFormData) => {
+export const createPatient = async (patientData: IPatientFormData) => {
   const token = localStorage.getItem('auth_token');
   if (!token) {
     throw new Error('No token found. Please login to create patients.');

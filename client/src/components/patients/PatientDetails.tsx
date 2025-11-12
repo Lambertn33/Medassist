@@ -1,40 +1,9 @@
 import { FaUser, FaStethoscope, FaPhone, FaUserFriends } from 'react-icons/fa';
 import { Card } from '@/components/dashboard/Card';
 import { formatDate } from '@/utils';
+import type { IPatientDetails } from '@/interfaces/patients/IPatient';
 
-export const PatientDetails = () => {
-  // Mock data for design - will be replaced with props later
-  const patient = {
-    id: 1,
-    first_name: 'John',
-    last_name: 'Doe',
-    gender: 'MALE',
-    date_of_birth: '1990-01-15',
-    phone: '0712345678',
-    national_id: '1234567890123456',
-    address: '123 Main Street, Kigali, Rwanda',
-    emergency_contact_name: 'Jane Doe',
-    emergency_contact_phone: '0798765432',
-    encounters_count: 5,
-    encounters: [
-      {
-        id: 1,
-        status: 'COMPLETED',
-        started_at: '2024-11-10T10:30:00',
-        ended_at: '2024-11-10T11:00:00',
-        summary: 'Regular checkup',
-        user: { name: 'Dr. Smith' },
-      },
-      {
-        id: 2,
-        status: 'IN_PROGRESS',
-        started_at: '2024-11-12T14:00:00',
-        ended_at: null,
-        summary: 'Follow-up consultation',
-        user: { name: 'Dr. Johnson' },
-      },
-    ],
-  };
+export const PatientDetails = ({ patientDetails }: { patientDetails: IPatientDetails }) => {
 
   const getStatusBadge = (status: string) => {
     const statusColors: Record<string, string> = {
@@ -73,10 +42,10 @@ export const PatientDetails = () => {
         <div className="flex justify-between items-center mb-8">
           <div>
             <h1 className="text-3xl font-bold text-blue-600 mb-2">
-              {patient.first_name} {patient.last_name}
+              {patientDetails.first_name} {patientDetails.last_name}
             </h1>
             <p className="text-gray-600">
-              Patient ID: #{patient.id.toString().padStart(6, '0')}
+              Patient ID: #{patientDetails.id.toString().padStart(6, '0')}
             </p>
           </div>
           <div className="flex gap-3">
@@ -93,7 +62,7 @@ export const PatientDetails = () => {
         <div className="mb-6">
           <Card
             title="Total Encounters"
-            value={patient.encounters_count}
+            value={patientDetails.encounters?.length || 0}
             icon={<FaStethoscope />}
             bgColor="bg-blue-50"
             iconBgColor="bg-blue-500"
@@ -113,19 +82,19 @@ export const PatientDetails = () => {
                 <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
                   Gender
                 </p>
-                <p className="text-sm text-gray-900">{patient.gender}</p>
+                <p className="text-sm text-gray-900">{patientDetails.gender}</p>
               </div>
               <div>
                 <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
                   Date of Birth
                 </p>
-                <p className="text-sm text-gray-900">{formatDate(patient.date_of_birth)}</p>
+                <p className="text-sm text-gray-900">{formatDate(patientDetails.date_of_birth)}</p>
               </div>
               <div>
                 <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
                   National ID
                 </p>
-                <p className="text-sm text-gray-900">{patient.national_id}</p>
+                <p className="text-sm text-gray-900">{patientDetails.national_id}</p>
               </div>
             </div>
           </div>
@@ -141,13 +110,13 @@ export const PatientDetails = () => {
                 <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
                   Phone
                 </p>
-                <p className="text-sm text-gray-900">{patient.phone}</p>
+                <p className="text-sm text-gray-900">{patientDetails.phone}</p>
               </div>
               <div>
                 <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
                   Address
                 </p>
-                <p className="text-sm text-gray-900">{patient.address}</p>
+                <p className="text-sm text-gray-900">{patientDetails.address}</p>
               </div>
             </div>
           </div>
@@ -163,13 +132,13 @@ export const PatientDetails = () => {
                 <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
                   Name
                 </p>
-                <p className="text-sm text-gray-900">{patient.emergency_contact_name}</p>
+                <p className="text-sm text-gray-900">{patientDetails.emergency_contact_name}</p>
               </div>
               <div>
                 <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
                   Phone
                 </p>
-                <p className="text-sm text-gray-900">{patient.emergency_contact_phone}</p>
+                <p className="text-sm text-gray-900">{patientDetails.emergency_contact_phone}</p>
               </div>
             </div>
           </div>
@@ -180,7 +149,7 @@ export const PatientDetails = () => {
           <div className="px-6 py-4 border-b border-gray-200">
             <h2 className="text-xl font-semibold text-gray-900">Encounters</h2>
           </div>
-          {patient.encounters.length === 0 ? (
+          {patientDetails.encounters.length === 0 ? (
             <div className="p-8 text-center">
               <p className="text-gray-500 text-lg">No encounters found</p>
             </div>
@@ -207,7 +176,7 @@ export const PatientDetails = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
-                  {patient.encounters.map((encounter) => (
+                  {patientDetails.encounters.map((encounter) => (
                     <tr
                       key={encounter.id}
                       className="bg-white hover:bg-blue-50 transition-colors"
