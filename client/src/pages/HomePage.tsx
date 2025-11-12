@@ -1,4 +1,4 @@
-import HomeCard from "@/components/home/HomeCard";
+import { HomeCard } from "@/components";
 import { FaUser, FaStethoscope, FaChartLine, FaPrescriptionBottle, FaUserMd } from "react-icons/fa";
 import { MdOutlineTrackChanges } from "react-icons/md";
 import type { IFeature } from "@/interfaces/home/IFeature";

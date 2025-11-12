@@ -1,5 +1,5 @@
 import AppRoutes from '@/AppRoutes';
-import Navbar from '@/components/navbar/Navbar';
+import { Navbar } from '@/components';
 
 export default function App() {
   return <div className="min-h-screen bg-gray-100">

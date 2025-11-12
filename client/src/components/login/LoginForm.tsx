@@ -1,7 +1,6 @@
-import { Input } from '@/components/ui/Input';
+import { Input, Button } from '@/components';
 import type { UseMutationResult } from '@tanstack/react-query';
 import { Link } from 'react-router';
-import { Button } from '@/components/ui/Button';
 
 interface LoginFormProps {
   handleSubmit: (e: React.FormEvent) => void;
