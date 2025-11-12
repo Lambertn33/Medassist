@@ -1,8 +1,8 @@
 import { FaStethoscope } from 'react-icons/fa';
-import { Card } from '@/components/dashboard/Card';
 import type { IPatientDetails } from '@/interfaces/patients/IPatient';
-import { PatientDetailsInfo } from './PatientDetailsInfo';
-import { PatientDetailsEncounters } from './PatientDetailsEncounters';
+import { PatientDetailsInfo, PatientDetailsEncounters, Card } from '@/components';
+
+import { Link } from 'react-router';
 
 export const PatientDetails = ({ patientDetails }: { patientDetails: IPatientDetails }) => {
 
@@ -20,9 +20,9 @@ export const PatientDetails = ({ patientDetails }: { patientDetails: IPatientDet
             </p>
           </div>
           <div className="flex gap-3">
-            <button className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition-colors font-medium">
+            <Link to="/dashboard/patients" className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition-colors font-medium">
               Back
-            </button>
+            </Link>
             <button className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors font-medium">
               Edit
             </button>

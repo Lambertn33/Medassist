@@ -12,6 +12,11 @@ import { Modal } from './ui/Modal';
 import { Select } from './ui/Select';
 import { Toast } from './ui/Toast';
 
+import { PatientDetailsInfo } from './patients/PatientDetailsInfo';
+import { PatientDetailsEncounters } from './patients/PatientDetailsEncounters';
+
+import { Card } from './dashboard/Card';
+
 import { ProtectedRoute } from './auth/ProtectedRoute';
 import { PublicRoute } from './auth/PublicRoute';
 
@@ -23,4 +28,25 @@ import { PatientsSearch } from './patients/PatientsSearch';
 import { PatientForm } from './patients/PatientForm';
 import { PatientDetails } from './patients/PatientDetails';
 
-export { LoginForm, LoginHeader, Button, Input, Select, Modal, Navbar, HomeCard, ProtectedRoute, PublicRoute, Loader, TotalsOverview, LatestEncounters, PatientsList, PatientsSearch, PatientForm, Toast, PatientDetails };
+export { 
+    LoginForm,
+    LoginHeader,
+    Button,
+    Input,
+    Select, 
+    Modal, 
+    Navbar, 
+    HomeCard, 
+    ProtectedRoute, 
+    PublicRoute, 
+    Loader, 
+    TotalsOverview, 
+    LatestEncounters, 
+    PatientsList, 
+    PatientsSearch, 
+    PatientForm, 
+    Toast, 
+    PatientDetails, 
+    PatientDetailsInfo, 
+    PatientDetailsEncounters, 
+    Card };
