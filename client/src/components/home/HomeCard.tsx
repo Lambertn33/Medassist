@@ -4,7 +4,7 @@ interface HomeCardProps {
   icon: React.ReactNode;
 }
 
-const HomeCard = ({ title, description, icon }: HomeCardProps) => {
+export const HomeCard = ({ title, description, icon }: HomeCardProps) => {
   return (
     <div>
       <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
@@ -19,5 +19,3 @@ const HomeCard = ({ title, description, icon }: HomeCardProps) => {
     </div>
   );
 };
-
-export default HomeCard;
