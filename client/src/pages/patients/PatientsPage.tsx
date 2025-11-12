@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { getPatients, createPatient } from '@/api/patients';
+import { getPatients, createPatient, deletePatient } from '@/api/patients';
 import type { IPatientBase } from '@/interfaces/patients/IPatient';
 import { Button, PatientsList, PatientForm, Toast } from '@/components';
 import type { IPatientFormData } from '@/interfaces/patients/IPatient';
@@ -45,6 +45,27 @@ export const PatientsPage = () => {
         },
     });
 
+    // Delete patient mutation
+    const deletePatientMutation = useMutation({
+        mutationFn: (id: number) => deletePatient(id),
+        onSuccess: (data) => {
+            queryClient.invalidateQueries({ queryKey: ['patients'] });
+            const message = data?.message as string || 'Patient deleted successfully';
+            setToastMessage(message);
+            setShowToast(true);
+            setTimeout(() => {
+                setShowToast(false);
+            }, 3000);
+        },
+        onError: (error) => {
+            setToastMessage(error.message);
+            setShowToast(true);
+            setTimeout(() => {
+                setShowToast(false);
+            }, 3000);
+        },
+    }); 
+
     // Handle form submission
     const handleSubmit = (formData: IPatientFormData) => {
         createPatientMutation.mutate(formData);
@@ -84,6 +105,8 @@ export const PatientsPage = () => {
                 onSearchChange={setInputValue}
                 isLoading={isLoading}
                 error={error}
+                onDelete={(id) => deletePatientMutation.mutate(id)}
+                isDeleting={deletePatientMutation.isPending}
             />
             <PatientForm
                 isOpen={isModalOpen}

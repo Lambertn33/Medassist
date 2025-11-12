@@ -1,6 +1,6 @@
 import { Link } from 'react-router';
 import type { IPatientBase } from '@/interfaces/patients/IPatient';
-import { PatientsSearch, Loader } from '@/components';
+import { PatientsSearch, Loader, Button } from '@/components';
 import { formatDate } from '@/utils';
 
 interface PatientsListProps {
@@ -9,6 +9,8 @@ interface PatientsListProps {
   onSearchChange: (value: string) => void;
   isLoading?: boolean;
   error?: Error | null;
+  onDelete?: (id: number) => void;
+  isDeleting?: boolean;
 }
 
 export const PatientsList = ({ 
@@ -16,7 +18,9 @@ export const PatientsList = ({
   searchValue, 
   onSearchChange, 
   isLoading = false,
-  error 
+  error,
+  onDelete,
+  isDeleting = false
 }: PatientsListProps) => {
 
   return (
@@ -85,13 +89,22 @@ export const PatientsList = ({
                   <td className="px-6 py-4 text-gray-700 text-center">
                     {patient.encounters_count || 0}
                   </td>
-                  <td className="px-6 py-4">
+                  <td className="px-6 py-4 flex gap-2">
                     <Link
                       to={`/dashboard/patients/${patient.id}`}
                       className="inline-block px-4 py-2 cursor-pointer bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors font-medium"
                     >
                       View
                     </Link>
+                    <Button
+                      disabled={isDeleting}
+                      type="button"
+                      loading={isDeleting}
+                      onClick={() => onDelete?.(patient.id)}
+                      className={`inline-block px-4 py-2 cursor-pointer ${isDeleting ? 'bg-red-200' : 'bg-red-600'} text-white rounded-md hover:bg-red-700 transition-colors font-medium`}
+                    >
+                      {isDeleting ? 'Deleting...' : 'Delete'}
+                    </Button>
                   </td>
                 </tr>
               ))
