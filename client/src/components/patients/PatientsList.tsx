@@ -1,5 +1,6 @@
 import type { IPatient } from '@/interfaces/patients/IPatient';
 import { PatientsSearch, Loader } from '@/components';
+import { formatDate } from '@/utils';
 
 interface PatientsListProps {
   patients: IPatient[];
@@ -16,15 +17,6 @@ export const PatientsList = ({
   isLoading = false,
   error 
 }: PatientsListProps) => {
-  
-  const formatDate = (dateString: string | null) => {
-    if (!dateString) return 'N/A';
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    });
-  };
 
   return (
     <div className="bg-white rounded-lg shadow-sm overflow-hidden">
