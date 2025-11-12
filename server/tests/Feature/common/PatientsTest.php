@@ -104,11 +104,7 @@ class PatientsTest extends TestCase
                         'last_name',
                         'gender',
                         'date_of_birth',
-                        'phone',
-                        'national_id',
-                        'address',
-                        'emergency_contact_name',
-                        'emergency_contact_phone',
+                        'encounters_count',
                     ]
                 ]
             ]);
