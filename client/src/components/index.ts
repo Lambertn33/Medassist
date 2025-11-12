@@ -10,6 +10,7 @@ import { Input } from './ui/Input';
 import { Loader } from './ui/Loader';
 import { Modal } from './ui/Modal';
 import { Select } from './ui/Select';
+import { Toast } from './ui/Toast';
 
 import { ProtectedRoute } from './auth/ProtectedRoute';
 import { PublicRoute } from './auth/PublicRoute';
@@ -21,4 +22,4 @@ import { PatientsList } from './patients/PatientsList';
 import { PatientsSearch } from './patients/PatientsSearch';
 import { PatientForm } from './patients/PatientForm';
 
-export { LoginForm, LoginHeader, Button, Input, Select, Modal, Navbar, HomeCard, ProtectedRoute, PublicRoute, Loader, TotalsOverview, LatestEncounters, PatientsList, PatientsSearch, PatientForm };
+export { LoginForm, LoginHeader, Button, Input, Select, Modal, Navbar, HomeCard, ProtectedRoute, PublicRoute, Loader, TotalsOverview, LatestEncounters, PatientsList, PatientsSearch, PatientForm, Toast };

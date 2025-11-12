@@ -2,13 +2,15 @@ import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getPatients, createPatient } from '@/api/patients';
 import type { IPatient } from '@/interfaces/patients/IPatient';
-import { Button, PatientsList, PatientForm } from '@/components';
-import type { PatientFormData } from '@/components/patients/PatientForm';
+import { Button, PatientsList, PatientForm, Toast } from '@/components';
+import type { IPatientFormData } from '@/interfaces/patients/IPatient';
 
 export const PatientsPage = () => {
     const [inputValue, setInputValue] = useState('');
     const [searchTerm, setSearchTerm] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [showToast, setShowToast] = useState(false);
+    const [toastMessage, setToastMessage] = useState('');
     const queryClient = useQueryClient();
 
     useEffect(() => {
@@ -28,15 +30,23 @@ export const PatientsPage = () => {
     // Create patient mutation
     const createPatientMutation = useMutation({
         mutationFn: createPatient,
-        onSuccess: () => {
+        onSuccess: (data) => {
             // Invalidate and refetch patients list
             queryClient.invalidateQueries({ queryKey: ['patients'] });
             setIsModalOpen(false);
+
+            // Show success toast with message from response
+            const message = data?.message as string;
+            setToastMessage(message);
+            setShowToast(true);
+            setTimeout(() => {
+                setShowToast(false);
+            }, 3000);
         },
     });
 
     // Handle form submission
-    const handleSubmit = (formData: PatientFormData) => {
+    const handleSubmit = (formData: IPatientFormData) => {
         createPatientMutation.mutate(formData);
     };
 
@@ -48,6 +58,14 @@ export const PatientsPage = () => {
 
     return (
         <>
+            {showToast && (
+                <div className="fixed top-20 right-4 z-50 transition-all duration-300 ease-in-out">
+                    <Toast
+                        message={toastMessage}
+                        type="success"
+                    />
+                </div>
+            )}
             <div className="flex justify-between items-center mb-8">
                 <h1 className="text-3xl font-bold text-blue-600">Patients List</h1>
                 <Button 

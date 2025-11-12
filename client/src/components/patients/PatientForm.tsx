@@ -1,28 +1,17 @@
 import { useState, useEffect } from 'react';
 import { Modal, Input, Button, Select } from '@/components';
+import type { IPatientFormData } from '@/interfaces/patients/IPatient';
 
 interface PatientFormProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit?: (data: PatientFormData) => void;
+  onSubmit?: (data: IPatientFormData) => void;
   error?: Error | null;
   isLoading?: boolean;
 }
 
-export interface PatientFormData {
-  first_name: string;
-  last_name: string;
-  gender: string;
-  date_of_birth: string;
-  phone: string;
-  national_id: string;
-  address: string;
-  emergency_contact_name: string;
-  emergency_contact_phone: string;
-}
-
 export const PatientForm = ({ isOpen, onClose, onSubmit, error, isLoading = false }: PatientFormProps) => {
-  const [formData, setFormData] = useState<PatientFormData>({
+  const [formData, setFormData] = useState<IPatientFormData>({
     first_name: '',
     last_name: '',
     gender: '',
