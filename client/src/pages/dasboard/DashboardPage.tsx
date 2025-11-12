@@ -1,23 +1,27 @@
-import { getDashboardData } from '@/api/dashboard';
-import { Loader } from '@/components/ui/Loader';
 import { useQuery } from '@tanstack/react-query';
+import { getDashboardData } from '@/api/dashboard';
+import { Loader } from '@/components';
+import { DashboardCards } from '@/components/dashboard/DashboardCards';
+import type { IDashboardData } from '@/interfaces/dashboard/IDashboardData';
 
 export const DashboardPage = () => {
-    const { data, isLoading, error } = useQuery({
+    const { data, isLoading, error } = useQuery<IDashboardData>({
         queryKey: ['dashboard'],
         queryFn: getDashboardData,
     });
 
-    if (isLoading) return <Loader />;
-    if (error) return <div>Error: {error.message}</div>;
-
     return (
-        <div>
-            <h2>Dashboard Page</h2>
-            <div>
-                <h3>Patients</h3>
-                <p>{data?.patients}</p>
+        <div className="min-h-screen">
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                <h1 className="text-3xl font-bold text-gray-900 mb-6">Dashboard</h1>
+                
+                {isLoading ? 
+                <div className="flex justify-center items-center">
+                    <Loader />
+                </div> : error ?
+                 <div className="text-red-500 font-bold text-center"> {error instanceof Error ? error.message : 'An unexpected error occurred'}</div> 
+                 : <DashboardCards data={data} />}
             </div>
         </div>
-    );
-}
+    )
+};
