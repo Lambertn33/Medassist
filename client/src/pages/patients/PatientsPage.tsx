@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { getPatients } from '@/api/patients';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { getPatients, createPatient } from '@/api/patients';
 import type { IPatient } from '@/interfaces/patients/IPatient';
 import { Button, PatientsList, PatientForm } from '@/components';
 import type { PatientFormData } from '@/components/patients/PatientForm';
@@ -9,6 +9,7 @@ export const PatientsPage = () => {
     const [inputValue, setInputValue] = useState('');
     const [searchTerm, setSearchTerm] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const queryClient = useQueryClient();
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -24,10 +25,24 @@ export const PatientsPage = () => {
         queryFn: () => getPatients(searchTerm || null),
     });
 
+    // Create patient mutation
+    const createPatientMutation = useMutation({
+        mutationFn: createPatient,
+        onSuccess: () => {
+            // Invalidate and refetch patients list
+            queryClient.invalidateQueries({ queryKey: ['patients'] });
+            setIsModalOpen(false);
+        },
+    });
+
     // Handle form submission
     const handleSubmit = (formData: PatientFormData) => {
-        // TODO: Implement API call to create patient
-        console.log('Form data:', formData);
+        createPatientMutation.mutate(formData);
+    };
+
+    // Handle modal close - reset errors
+    const handleClose = () => {
+        createPatientMutation.reset();
         setIsModalOpen(false);
     };
 
@@ -54,8 +69,10 @@ export const PatientsPage = () => {
             />
             <PatientForm
                 isOpen={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
+                onClose={handleClose}
                 onSubmit={handleSubmit}
+                error={createPatientMutation.error as Error | null}
+                isLoading={createPatientMutation.isPending}
             />
         </>
     );
