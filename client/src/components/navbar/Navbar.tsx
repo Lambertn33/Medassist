@@ -53,6 +53,7 @@ export const Navbar = () => {
             {isAuthenticated ? (
               <>
                 <NavLink to="/dashboard">Dashboard</NavLink>
+                <NavLink to="/dashboard/patients">Patients</NavLink>
                 {user && (
                   <div className="relative" ref={dropdownRef}>
                     <button
