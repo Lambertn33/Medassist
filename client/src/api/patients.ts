@@ -6,7 +6,11 @@ export const getPatients = async (search: string | null = null) => {
   if (!token) {
     throw new Error('No token found. Please login to access patients.');
   }
-  const response = await axios.get(`${API_URL}/common/patients${search ? `?search=${search}` : ''}`, {
+  
+  const params = search ? { search } : {};
+  
+  const response = await axios.get(`${API_URL}/common/patients`, {
+    params,
     headers: {
       Authorization: `Bearer ${token}`,
     },
