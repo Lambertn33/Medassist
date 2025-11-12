@@ -11,6 +11,8 @@ use App\Http\Controllers\common\EncountersController as CommonEncountersControll
 use App\Http\Controllers\common\ObservationsController as CommonObservationsController;
 use App\Http\Controllers\common\DiagnosesController as CommonDiagnosesController;
 use App\Http\Controllers\common\TreatmentsController as CommonTreatmentsController;
+use App\Http\Controllers\common\DashboardController as CommonDashboardController;
+
 
 // Auth Routes
 Route::controller(AuthController::class)->prefix('auth')->group(function () {
@@ -62,5 +64,8 @@ Route::prefix('common')->middleware('auth:sanctum')->group(function () {
                 Route::post('/', 'store');
             });
         });
+    });
+    Route::prefix('dashboard')->group(function () {
+        Route::get('/', CommonDashboardController::class);
     });
 });
