@@ -47,10 +47,12 @@ Chosen Problem: **Problem 2 – Consultation Overload**
   - **Treatment:** prescribed medication/procedure/counseling
 - API will be consumed by a React/Next.js frontend.
 
-### Frontend (Next.js 15)
+### Frontend (React + Vite + TypeScript)
+- Modern single-page application (SPA) built with React 19 and TypeScript.
 - Nurse dashboard to list patients and encounters.
-- Forms for adding observations and treatments.
-- Uses REST API from the backend via Axios or React Query.
+- Forms for adding observations, diagnoses, and treatments.
+- Uses REST API from the backend via Axios and React Query.
+- Fully responsive design with mobile-first approach.
 
 ### Infrastructure
 - **Docker Compose** orchestrates PHP, MySQL, and Node containers.
@@ -66,7 +68,12 @@ Chosen Problem: **Problem 2 – Consultation Overload**
 |--------|-------------|--------|
 | **Backend** | Laravel 12 (PHP 8.3) | Robust API layer, expressive ORM, and queue-ready |
 | **Database** | MySQL 8 | Familiar, simple to run in Docker |
-| **Frontend** | Next.js 15 + TypeScript | Great developer experience, SSR-ready |
+| **Frontend** | React 19 + Vite + TypeScript | Fast development, excellent DX, modern tooling |
+| **UI Framework** | Tailwind CSS 4 | Utility-first CSS, rapid UI development |
+| **State Management** | React Query (TanStack Query) | Server state management, caching, synchronization |
+| **Routing** | React Router 7 | Client-side routing with protected routes |
+| **HTTP Client** | Axios | Promise-based HTTP requests |
+| **Icons** | React Icons | Comprehensive icon library |
 | **Auth** | Laravel Sanctum | Token-based authentication for APIs |
 | **Containerization** | Docker + Docker Compose | Reproducible environment |
 | **CI/CD** | GitHub Actions | Automatic testing on PRs |
@@ -511,12 +518,176 @@ All routes are protected by `auth:sanctum` and require `admin`, `doctor`, or `nu
 ## 16. References
 
 - Laravel Docs – [https://laravel.com/docs](https://laravel.com/docs)
-- Next.js Docs – [https://nextjs.org/docs](https://nextjs.org/docs)
+- React Docs – [https://react.dev](https://react.dev)
+- React Router Docs – [https://reactrouter.com](https://reactrouter.com)
+- TanStack Query Docs – [https://tanstack.com/query](https://tanstack.com/query)
 - e-fiche Challenge Instructions
 
 ---
 
-## 17. Summary
+## 17. Frontend Architecture
 
-> **MedAssist** is a lightweight Laravel + Next.js platform that helps rural nurses record consultations quickly and efficiently.  
+### 17.1 Technology Stack
+
+The frontend is built as a modern single-page application (SPA) using:
+
+- **React 19** – UI library for building interactive user interfaces
+- **TypeScript** – Type-safe JavaScript for better developer experience and code quality
+- **Vite** – Fast build tool and development server
+- **React Router 7** – Client-side routing with protected routes
+- **TanStack Query (React Query)** – Server state management, caching, and synchronization
+- **Axios** – HTTP client for API communication
+- **Tailwind CSS 4** – Utility-first CSS framework for rapid UI development
+- **React Icons** – Comprehensive icon library (FontAwesome, Material Design, etc.)
+
+### 17.2 Application Pages
+
+The application consists of the following main pages:
+
+#### Public Pages
+
+1. **HomePage** (`/`)
+   - Landing page showcasing MedAssist features
+   - Displays feature cards (Patient Management, Encounter Tracking, Observations & Diagnoses, etc.)
+   - Call-to-action buttons for authenticated/unauthenticated users
+   - Responsive grid layout
+
+2. **LoginPage** (`/login`)
+   - User authentication form
+   - Email and password input fields
+   - Redirects authenticated users to dashboard
+   - Protected by `PublicRoute` (redirects if already logged in)
+
+3. **NotFoundPage** (`*`)
+   - 404 error page for unmatched routes
+   - Displays friendly error message with navigation options
+   - "Back to Home" and "Go Back" buttons
+
+#### Protected Pages (Require Authentication)
+
+4. **DashboardIndex** (`/dashboard`)
+   - Overview dashboard showing key metrics
+   - Total patients, encounters, and observations counts
+   - Latest encounters list with status badges
+   - Quick access cards to main modules
+
+5. **PatientsPage** (`/dashboard/patients`)
+   - List all patients with search functionality
+   - Patient table displaying: ID, name, national ID, phone, gender, date of birth
+   - "Add Patient" button (opens modal form)
+   - "Edit" and "Delete" buttons (delete only for admins)
+   - Search filters by first name, last name, national ID, or phone
+   - Navigate to patient details on row click
+
+6. **PatientDetailsPage** (`/dashboard/patients/:id`)
+   - Detailed view of a single patient
+   - Patient information section (demographics, contact details, emergency contact)
+   - Encounters list for the patient
+   - "Back" button (navigates to previous page)
+   - "Edit Patient" button (opens edit modal)
+   - "Create Encounter" button (creates new encounter and navigates to encounter details)
+   - Loading and disabled states during encounter creation
+
+7. **EncountersPage** (`/dashboard/encounters`)
+   - List all encounters with filtering
+   - Filter by patient (dropdown) and status (dropdown)
+   - Encounter table displaying: ID, patient name, provider, status, started date, duration
+   - Status badges (INITIALIZED, IN_PROGRESS, COMPLETED, CANCELED)
+   - Navigate to encounter details on row click
+   - "All" option in filters to reset selections
+
+8. **EncountersDetailsPage** (`/dashboard/encounters/:encounterId`)
+   - Detailed view of a single encounter
+   - Tabbed interface with four tabs:
+     - **Overview**: Encounter summary, patient info, provider, timestamps, duration
+     - **Observations**: List of vital signs with "Add Observation" button
+     - **Diagnoses**: List of diagnoses with "Add Diagnosis" button
+     - **Treatments**: List of treatments with "Add Treatment" button
+   - Action buttons based on encounter status:
+     - `INITIALIZED`: "Start Consultation" button
+     - `IN_PROGRESS`: "End Consultation" and "Cancel Consultation" buttons
+     - `COMPLETED`: Status indicator
+     - `CANCELED`: Status indicator
+   - "Back to All Encounters" link at the top
+   - Lazy loading for observations, diagnoses, and treatments (fetched when tab is opened)
+   - Modals for adding observations, diagnoses, and treatments
+   - End consultation modal with summary textarea
+
+9. **UsersPage** (`/dashboard/users`) – Admin Only
+   - List all system users
+   - User table displaying: name, email, role, last login, account status
+   - Search functionality (filters by name or email)
+   - "Add User" button (opens modal form)
+   - "Change Status" button for each user (activates/deactivates account)
+   - Role badges (ADMIN, DOCTOR, NURSE)
+   - Protected by `AdminRoute` (only accessible to users with ADMIN role)
+
+### 17.3 Main Functional Requirements
+
+#### Authentication & Authorization
+
+- **Token-based Authentication**: Uses Laravel Sanctum tokens stored in `localStorage`
+- **Auth Context**: Global authentication state management via React Context
+- **Protected Routes**: `ProtectedRoute` component guards authenticated pages
+- **Public Routes**: `PublicRoute` component redirects authenticated users away from login
+- **Admin Routes**: `AdminRoute` component restricts access to admin-only pages
+- **Auto-logout**: Users are automatically logged out when account status changes
+
+#### Patient Management
+
+- **List Patients**: View all patients with search and pagination
+- **Create Patient**: Modal form with validation (first name, last name, national ID, phone, date of birth, gender, address, emergency contact)
+- **View Patient Details**: Comprehensive patient information with encounter history
+- **Edit Patient**: Update patient demographics via modal form
+- **Delete Patient**: Soft delete (admin only)
+- **Create Encounter**: Quick encounter creation from patient details page
+
+#### Encounter Management
+
+- **List Encounters**: View all encounters with filtering by patient and status
+- **View Encounter Details**: Tabbed interface showing overview, observations, diagnoses, and treatments
+- **Start Consultation**: Transition encounter from `INITIALIZED` to `IN_PROGRESS`
+- **End Consultation**: Transition encounter from `IN_PROGRESS` to `COMPLETED` (requires at least one observation and one diagnosis)
+- **Cancel Consultation**: Transition encounter from `IN_PROGRESS` to `CANCELED`
+- **Add Observations**: Record vital signs (temperature, blood pressure, heart rate, oxygen saturation) during active consultation
+- **Add Diagnoses**: Record clinical conditions with optional ICD code and primary diagnosis flag
+- **Add Treatments**: Record medications, procedures, or counseling with dosage, duration, and notes
+
+#### User Management (Admin Only)
+
+- **List Users**: View all system users with search
+- **Create User**: Modal form with validation (name, email, password, role)
+- **Update Account Status**: Activate or deactivate user accounts (automatically logs out affected users)
+
+#### UI/UX Features
+
+- **Responsive Design**: Mobile-first approach with breakpoints for tablet and desktop
+- **Loading States**: Spinner components during API calls
+- **Error Handling**: Toast notifications for success and error messages
+- **Form Validation**: Client-side and server-side validation with error display
+- **Optimistic Updates**: Immediate UI updates with cache invalidation for better UX
+- **Lazy Loading**: Data fetched only when needed (e.g., observations when tab is opened)
+- **Modal Forms**: Reusable modal component for creating/editing entities
+- **Status Badges**: Visual indicators for encounter statuses and user roles
+- **Navigation**: Fixed navbar with role-based menu items and mobile hamburger menu
+
+#### State Management
+
+- **Server State**: Managed by React Query with automatic caching, refetching, and synchronization
+- **Client State**: Local component state for UI interactions (modals, forms, tabs)
+- **Auth State**: Global authentication state via React Context
+- **Cache Management**: Query invalidation and refetching on mutations for data consistency
+
+#### API Integration
+
+- **Centralized API Functions**: Organized by domain (auth, patients, encounters, users, dashboard)
+- **Error Handling**: Centralized error handling utility (`handleAxiosError`)
+- **Auth Headers**: Reusable function for adding authentication tokens to requests
+- **Base URL Configuration**: Centralized API endpoint configuration
+
+---
+
+## 18. Summary
+
+> **MedAssist** is a lightweight Laravel + React platform that helps rural nurses record consultations quickly and efficiently.  
 > It focuses on simplicity, maintainability, and real-world practicality — with a design that can evolve into a full clinic management platform in the next phase.
