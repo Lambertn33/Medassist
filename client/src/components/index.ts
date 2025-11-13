@@ -28,6 +28,9 @@ import { PatientsSearch } from './patients/PatientsSearch';
 import { PatientForm } from './patients/PatientForm';
 import { PatientDetails } from './patients/PatientDetails';
 
+import { EncountersList } from './encounters/EncountersList';
+import { EncountersFilter } from './encounters/EncountersFilter';
+
 export { 
     LoginForm,
     LoginHeader,
@@ -49,4 +52,6 @@ export {
     PatientDetails, 
     PatientDetailsInfo, 
     PatientDetailsEncounters, 
+    EncountersList,
+    EncountersFilter,
     Card };

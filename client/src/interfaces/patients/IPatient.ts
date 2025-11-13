@@ -26,10 +26,10 @@ export interface IPatientDetails extends IPatientBase {
     emergency_contact_name: string;
     emergency_contact_phone: string;
     encounters_count: number;
-    encounters: IEncounter[];
+    encounters: IPatientEncounterDetails[];
 }
 
-export interface IEncounter {
+export interface IPatientEncounterDetails {
     id: number;
     patient_id: number;
     user_id: number;
