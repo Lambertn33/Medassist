@@ -1,5 +1,5 @@
 import { Routes, Route } from 'react-router';
-import { HomePage, LoginPage, DashboardLayout, DashboardIndex, PatientsPage, PatientDetailsPage, EncountersPage, EncountersDetailsPage, UsersPage } from '@/pages';
+import { HomePage, LoginPage, NotFoundPage, DashboardLayout, DashboardIndex, PatientsPage, PatientDetailsPage, EncountersPage, EncountersDetailsPage, UsersPage } from '@/pages';
 import { PublicRoute, ProtectedRoute, AdminRoute } from '@/components';
 
 const AppRoutes = () => {
@@ -38,6 +38,9 @@ const AppRoutes = () => {
           }
         />
       </Route>
+
+      {/* 404 Catch-all route */}
+      <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );
 };
