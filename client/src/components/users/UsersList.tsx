@@ -52,18 +52,21 @@ export const UsersList = ({
               <th scope="col" className="px-6 py-4 font-semibold">
                 Last Login
               </th>
+              <th scope="col" className="px-6 py-4 font-semibold">
+                Number of Encounters
+              </th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
             {isLoading ? (
               <tr>
-                <td colSpan={4} className="px-6 py-8">
+                <td colSpan={5} className="px-6 py-8">
                   <Loader message="Loading users..." />
                 </td>
               </tr>
             ) : error ? (
               <tr>
-                <td colSpan={4} className="px-6 py-8 text-center">
+                <td colSpan={5} className="px-6 py-8 text-center">
                   <p className="text-red-500 font-medium">
                     {error instanceof Error ? error.message : 'An unexpected error occurred'}
                   </p>
@@ -71,7 +74,7 @@ export const UsersList = ({
               </tr>
             ) : users.length === 0 ? (
               <tr>
-                <td colSpan={4} className="px-6 py-8 text-center">
+                  <td colSpan={5} className="px-6 py-8 text-center">
                   <p className="text-gray-500 text-lg">No users found</p>
                 </td>
               </tr>
@@ -95,6 +98,9 @@ export const UsersList = ({
                   </td>
                   <td className="px-6 py-4 text-gray-700">
                     {user.last_login_at ? formatDateTime(user.last_login_at) : 'Never'}
+                  </td>
+                  <td className="px-6 py-4 text-gray-700">
+                    {user.encounters_count}
                   </td>
                 </tr>
               ))

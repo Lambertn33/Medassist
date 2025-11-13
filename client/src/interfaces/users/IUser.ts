@@ -4,6 +4,7 @@ export interface IUser {
     email: string;
     role: string;
     last_login_at: string | null;
+    encounters_count: number;
 }
 
 export interface ICreateUser {

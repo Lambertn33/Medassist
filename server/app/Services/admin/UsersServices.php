@@ -20,7 +20,7 @@ class UsersServices
             });
         }
 
-        return $query->get();
+        return $query->withCount('encounters')->get();
     }
 
     public function createUser(array $fields): User
