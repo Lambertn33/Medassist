@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Button } from '@/components';
+import { useQuery } from '@tanstack/react-query';
+import { Button, Loader } from '@/components';
 import { formatDateTime } from '@/utils';
 import { 
   FaThermometerHalf, 
@@ -12,18 +13,13 @@ import {
   FaStar
 } from 'react-icons/fa';
 import type { IEncounter } from '@/interfaces/encounters/IEncounter';
+import type { IObservation } from '@/interfaces/encounters/IObservation';
+import { getEncounterObservations } from '@/api/encounters';
 
 import { EncounterOverview } from './EncounterOverview';
+import { EncounterObservations } from './EncounterObservations';
 
-// Temporary interfaces for hardcoded data
-interface IObservation {
-  id: number;
-  type: 'TEMPERATURE' | 'BLOOD_PRESSURE' | 'HEART_RATE' | 'OXYGEN_SATURATION';
-  value: string;
-  unit: string;
-  recorded_at: string;
-}
-
+// Temporary interfaces for hardcoded data (will be replaced with API calls)
 interface IDiagnosis {
   id: number;
   code: string | null;
@@ -45,63 +41,14 @@ type TabType = 'overview' | 'observations' | 'diagnoses' | 'treatments';
 export const EncounterDetails = ({ encounter }: { encounter: IEncounter }) => {
   const [activeTab, setActiveTab] = useState<TabType>('overview');
 
-  console.log(encounter, 'encounter');
+  const { data: observationsData, isLoading: isLoadingObservations, error: observationsError } = useQuery<{ observations: IObservation[] }>({
+    queryKey: ['encounter', encounter.id, 'observations'],
+    queryFn: () => getEncounterObservations(encounter.id),
+    enabled: activeTab === 'observations', // Only fetch when observations tab is active
+    staleTime: 30 * 1000, // Consider data fresh for 30 seconds
+  });
 
-  // Hardcoded encounter data
-  // const encounter = {
-  //   id: 123,
-  //   patient_id: 1,
-  //   user_id: 1,
-  //   status: 'IN_PROGRESS',
-  //   started_at: '2025-01-15T14:30:00',
-  //   ended_at: null,
-  //   summary: '',
-  //   patient: {
-  //     id: 1,
-  //     first_name: 'John',
-  //     last_name: 'Doe',
-  //     gender: 'Male',
-  //     date_of_birth: '1985-05-20',
-  //   },
-  //   user: {
-  //     id: 1,
-  //     name: 'Dr. Sarah Smith',
-  //     email: 'sarah.smith@medassist.com',
-  //     role: 'doctor',
-  //   },
-  // };
-
-  // Hardcoded observations
-  const observations: IObservation[] = [
-    {
-      id: 1,
-      type: 'TEMPERATURE',
-      value: '37.5',
-      unit: '°C',
-      recorded_at: '2025-01-15T14:45:00',
-    },
-    {
-      id: 2,
-      type: 'BLOOD_PRESSURE',
-      value: '120/80',
-      unit: 'mmHg',
-      recorded_at: '2025-01-15T14:46:00',
-    },
-    {
-      id: 3,
-      type: 'HEART_RATE',
-      value: '72',
-      unit: 'bpm',
-      recorded_at: '2025-01-15T14:47:00',
-    },
-    {
-      id: 4,
-      type: 'OXYGEN_SATURATION',
-      value: '98',
-      unit: '%',
-      recorded_at: '2025-01-15T14:48:00',
-    },
-  ];
+  const observations = observationsData?.observations || [];
 
   // Hardcoded diagnoses
   const diagnoses: IDiagnosis[] = [
@@ -160,16 +107,6 @@ export const EncounterDetails = ({ encounter }: { encounter: IEncounter }) => {
         {status.replace(/_/g, ' ')}
       </span>
     );
-  };
-
-  const getObservationIcon = (type: string) => {
-    const icons: Record<string, React.ReactNode> = {
-      TEMPERATURE: <FaThermometerHalf className="text-red-500" />,
-      BLOOD_PRESSURE: <FaHeartbeat className="text-red-500" />,
-      HEART_RATE: <FaHeart className="text-red-500" />,
-      OXYGEN_SATURATION: <FaLungs className="text-blue-500" />,
-    };
-    return icons[type] || null;
   };
 
   const getTreatmentIcon = (type: string) => {
@@ -283,54 +220,11 @@ export const EncounterDetails = ({ encounter }: { encounter: IEncounter }) => {
 
         {/* Observations Tab */}
         {activeTab === 'observations' && (
-          <div className="space-y-4">
-            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-4">
-              <h3 className="text-base sm:text-lg font-semibold text-gray-900">Vital Signs</h3>
-              <Button
-                type="button"
-                disabled={false}
-                loading={false}
-                onClick={() => {}}
-                className="bg-blue-600 text-white px-3 sm:px-4 py-2 text-sm sm:text-base rounded-md hover:bg-blue-700 transition-colors font-medium w-full sm:w-auto"
-              >
-                + Add Observation
-              </Button>
-            </div>
-
-            {observations.length === 0 ? (
-              <div className="text-center py-12 bg-gray-50 rounded-lg">
-                <p className="text-gray-500">No observations recorded yet</p>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {observations.map((obs) => (
-                  <div
-                    key={obs.id}
-                    className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
-                  >
-                    <div className="flex items-start justify-between">
-                      <div className="flex items-start gap-2 sm:gap-3 flex-1 min-w-0">
-                        <div className="text-2xl sm:text-3xl flex items-center flex-shrink-0">
-                          {getObservationIcon(obs.type)}
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <div className="font-semibold text-gray-900 text-sm sm:text-base">
-                            {obs.type.replace(/_/g, ' ')}
-                          </div>
-                          <div className="text-xl sm:text-2xl font-bold text-blue-600 mt-1">
-                            {obs.value} {obs.unit}
-                          </div>
-                          <div className="text-xs sm:text-sm text-gray-500 mt-1">
-                            Recorded: {formatDateTime(obs.recorded_at)}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
+          <EncounterObservations
+           observations={observations}
+           isLoadingObservations={isLoadingObservations}
+           observationsError={observationsError as Error | null}
+          />
         )}
 
         {/* Diagnoses Tab */}

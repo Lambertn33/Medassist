@@ -65,3 +65,17 @@ export const getEncounter = async (id: number) => {
   });
   return response.data;
 };
+
+export const getEncounterObservations = async (id: number) => {
+  const token = localStorage.getItem('auth_token');
+  if (!token) {
+    throw new Error('No token found. Please login to access observations.');
+  }
+
+  const response = await axios.get(`${API_URL}/common/encounters/${id}/observations`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.data; 
+};
