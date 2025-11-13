@@ -4,6 +4,7 @@ import { LoginHeader } from './login/LoginHeader';
 import { HomeCard } from './home/HomeCard';
 
 import { Navbar } from './navbar/Navbar';
+import { Footer } from './footer/Footer';
 
 import { Button } from './ui/Button';
 import { Input } from './ui/Input';
@@ -44,7 +45,8 @@ export {
     Input,
     Select, 
     Modal, 
-    Navbar, 
+    Navbar,
+    Footer, 
     HomeCard, 
     ProtectedRoute, 
     PublicRoute,
