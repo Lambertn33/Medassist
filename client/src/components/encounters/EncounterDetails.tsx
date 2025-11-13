@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Link, useParams } from 'react-router';
-import { Button, Toast } from '@/components';
+import { Button, Toast, Modal, Textarea } from '@/components';
 import { formatDateTime } from '@/utils';
 
 import type { IEncounter } from '@/interfaces/encounters/IEncounter';
@@ -9,7 +9,7 @@ import type { IObservation } from '@/interfaces/encounters/IObservation';
 import type { IDiagnosis } from '@/interfaces/encounters/IDiagnosis';
 import type { ITreatment } from '@/interfaces/encounters/ITreatment';
 
-import { cancelEncounterConsultation, getEncounterDiagnoses, getEncounterObservations, getEncounterTreatments, startEncounterConsultation } from '@/api/encounters';
+import { cancelEncounterConsultation, endEncounterConsultation, getEncounterDiagnoses, getEncounterObservations, getEncounterTreatments, startEncounterConsultation } from '@/api/encounters';
 
 import { EncounterOverview } from './EncounterOverview';
 import { EncounterObservations } from './EncounterObservations';
@@ -24,6 +24,8 @@ export const EncounterDetails = ({ encounter }: { encounter: IEncounter }) => {
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
   const [toastType, setToastType] = useState<'success' | 'error'>('success');
+  const [isEndConsultationModalOpen, setIsEndConsultationModalOpen] = useState(false);
+  const [summary, setSummary] = useState('');
   const queryClient = useQueryClient();
   const { encounterId } = useParams();
   
@@ -110,11 +112,63 @@ export const EncounterDetails = ({ encounter }: { encounter: IEncounter }) => {
     },
   });
 
+  // End consultation mutation
+  const endConsultationMutation = useMutation({
+    mutationFn: ({ id, summary }: { id: number; summary: string }) => endEncounterConsultation(id, summary),
+    onSuccess: async (data) => {
+      // Optimistically update the encounter data immediately
+      if (data?.encounter && encounterId) {
+        queryClient.setQueryData(['encounter', encounterId], { encounter: data.encounter });
+      }
+      
+      // Invalidate and refetch queries to ensure data consistency
+      await queryClient.invalidateQueries({ queryKey: ['encounter', encounterId] });
+      await queryClient.refetchQueries({ queryKey: ['encounter', encounterId] });
+      queryClient.invalidateQueries({ queryKey: ['encounters'] });
+      
+      const message = data?.message as string || 'Consultation ended successfully';
+      setToastMessage(message);
+      setToastType('success');
+      setShowToast(true);
+      setTimeout(() => {
+        setShowToast(false);
+      }, 3000);
+      
+      handleCloseEndConsultationModal();
+    },
+    onError: (error) => {
+      setToastMessage(error.message);
+      setToastType('error');
+      setShowToast(true);
+      setTimeout(() => {
+        setShowToast(false);
+      }, 3000);
+    },
+  });
+
   const handleStartConsultation = () => {
     startConsultationMutation.mutate(encounter.id);
   }; 
   const handleCancelConsultation = () => {
     cancelConsultationMutation.mutate(encounter.id);
+  };
+
+  const handleOpenEndConsultationModal = () => {
+    setIsEndConsultationModalOpen(true);
+  };
+
+  const handleCloseEndConsultationModal = () => {
+    setIsEndConsultationModalOpen(false);
+    setSummary('');
+  };
+
+  const handleSummaryChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setSummary(e.target.value);
+  };
+
+  const handleEndConsultation = (e: React.FormEvent) => {
+    e.preventDefault();
+    endConsultationMutation.mutate({ id: encounter.id, summary });
   };
 
   const observations = observationsData?.observations || [];
@@ -207,16 +261,16 @@ export const EncounterDetails = ({ encounter }: { encounter: IEncounter }) => {
             <div className="flex gap-2 sm:flex-shrink-0">
               <Button
                 type="button"
-                disabled={false}
-                loading={false}
-                onClick={() => {}}
+                disabled={endConsultationMutation.isPending || cancelConsultationMutation.isPending}
+                loading={endConsultationMutation.isPending}
+                onClick={handleOpenEndConsultationModal}
                 className="bg-green-600 disabled:bg-green-400 disabled:cursor-not-allowed text-white px-3 sm:px-4 py-2 text-sm sm:text-base rounded-md hover:bg-green-700 transition-colors font-medium w-full sm:w-auto"
               >
                 End Consultation
               </Button>
               <Button
                 type="button"
-                disabled={cancelConsultationMutation.isPending}
+                disabled={endConsultationMutation.isPending || cancelConsultationMutation.isPending}
                 loading={cancelConsultationMutation.isPending}
                 onClick={handleCancelConsultation}
                 className="bg-red-600 text-white px-3 sm:px-4 py-2 text-sm sm:text-base rounded-md hover:bg-red-700 transition-colors font-medium w-full sm:w-auto"
@@ -303,6 +357,53 @@ export const EncounterDetails = ({ encounter }: { encounter: IEncounter }) => {
         )}
       </div>
     </div>
+
+    {/* End Consultation Modal */}
+    <Modal
+      isOpen={isEndConsultationModalOpen}
+      onClose={handleCloseEndConsultationModal}
+      title="End Consultation"
+      modalWidth="max-w-2xl"
+    >
+      <form onSubmit={handleEndConsultation}>
+        <div className="p-4 md:p-5 space-y-4">
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+            <p className="text-sm text-blue-800">
+              <strong>Note:</strong> To end the consultation, you must have at least one observation and one diagnosis recorded.
+            </p>
+          </div>
+          <Textarea
+            id="consultation-summary"
+            name="summary"
+            value={summary}
+            onChange={handleSummaryChange}
+            disabled={endConsultationMutation.isPending}
+            placeholder="Enter a summary of the consultation..."
+            label="Consultation Summary"
+          />
+        </div>
+
+        <div className="flex items-center justify-end gap-3 p-4 md:p-5 border-t border-gray-200 rounded-b">
+          <Button
+            type="button"
+            onClick={handleCloseEndConsultationModal}
+            disabled={endConsultationMutation.isPending}
+            loading={false}
+            className="px-4 py-2 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors font-medium"
+          >
+            Cancel
+          </Button>
+          <Button
+            type="submit"
+            disabled={!summary.trim() || endConsultationMutation.isPending}
+            loading={endConsultationMutation.isPending}
+            className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors font-medium disabled:bg-gray-300 disabled:cursor-not-allowed"
+          >
+            {endConsultationMutation.isPending ? 'Ending...' : 'End Consultation'}
+          </Button>
+        </div>
+      </form>
+    </Modal>
     </>
   );
 };

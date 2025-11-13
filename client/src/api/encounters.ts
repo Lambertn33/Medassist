@@ -138,6 +138,21 @@ export const cancelEncounterConsultation = async (id: number) => {
   return response.data;
 };
 
+export const endEncounterConsultation = async (id: number, summary: string) => {
+  const token = localStorage.getItem('auth_token');
+  if (!token) {
+    throw new Error('No token found. Please login to end consultation.');
+  }
+
+  const response = await axios.put(`${API_URL}/common/encounters/${id}/end-consultation`, { summary }, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+  });
+  return response.data;
+};
+
 export const getEncounterDiagnoses = async (id: number) => {
   const token = localStorage.getItem('auth_token');
   if (!token) {
