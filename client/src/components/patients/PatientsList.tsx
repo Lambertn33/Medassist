@@ -2,6 +2,7 @@ import { Link } from 'react-router';
 import type { IPatientBase } from '@/interfaces/patients/IPatient';
 import { TableSearch, Loader, Button } from '@/components';
 import { formatDate } from '@/utils';
+import { useAuth } from '@/hooks/useAuth';
 
 interface PatientsListProps {
   patients: IPatientBase[];
@@ -22,6 +23,8 @@ export const PatientsList = ({
   onDelete,
   isDeleting = false
 }: PatientsListProps) => {
+  const { user } = useAuth();
+  const isAdmin = user?.role === 'ADMIN';
 
   return (
     <div className="bg-white rounded-lg shadow-sm overflow-hidden">
@@ -96,15 +99,17 @@ export const PatientsList = ({
                     >
                       View
                     </Link>
-                    <Button
-                      disabled={isDeleting}
-                      type="button"
-                      loading={isDeleting}
-                      onClick={() => onDelete?.(patient.id)}
-                      className={`inline-block px-4 py-2 cursor-pointer ${isDeleting ? 'bg-red-200' : 'bg-red-600'} text-white rounded-md hover:bg-red-700 transition-colors font-medium`}
-                    >
-                      {isDeleting ? 'Deleting...' : 'Delete'}
-                    </Button>
+                    {isAdmin && (
+                      <Button
+                        disabled={isDeleting}
+                        type="button"
+                        loading={isDeleting}
+                        onClick={() => onDelete?.(patient.id)}
+                        className={`inline-block px-4 py-2 cursor-pointer ${isDeleting ? 'bg-red-200' : 'bg-red-600'} text-white rounded-md hover:bg-red-700 transition-colors font-medium`}
+                      >
+                        {isDeleting ? 'Deleting...' : 'Delete'}
+                      </Button>
+                    )}
                   </td>
                 </tr>
               ))
