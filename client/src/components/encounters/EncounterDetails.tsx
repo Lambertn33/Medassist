@@ -11,6 +11,9 @@ import {
   FaComments,
   FaStar
 } from 'react-icons/fa';
+import type { IEncounter } from '@/interfaces/encounters/IEncounter';
+
+import { EncounterOverview } from './EncounterOverview';
 
 // Temporary interfaces for hardcoded data
 interface IObservation {
@@ -39,32 +42,34 @@ interface ITreatment {
 
 type TabType = 'overview' | 'observations' | 'diagnoses' | 'treatments';
 
-export const EncounterDetails = () => {
+export const EncounterDetails = ({ encounter }: { encounter: IEncounter }) => {
   const [activeTab, setActiveTab] = useState<TabType>('overview');
 
+  console.log(encounter, 'encounter');
+
   // Hardcoded encounter data
-  const encounter = {
-    id: 123,
-    patient_id: 1,
-    user_id: 1,
-    status: 'IN_PROGRESS',
-    started_at: '2025-01-15T14:30:00',
-    ended_at: null,
-    summary: '',
-    patient: {
-      id: 1,
-      first_name: 'John',
-      last_name: 'Doe',
-      gender: 'Male',
-      date_of_birth: '1985-05-20',
-    },
-    user: {
-      id: 1,
-      name: 'Dr. Sarah Smith',
-      email: 'sarah.smith@medassist.com',
-      role: 'doctor',
-    },
-  };
+  // const encounter = {
+  //   id: 123,
+  //   patient_id: 1,
+  //   user_id: 1,
+  //   status: 'IN_PROGRESS',
+  //   started_at: '2025-01-15T14:30:00',
+  //   ended_at: null,
+  //   summary: '',
+  //   patient: {
+  //     id: 1,
+  //     first_name: 'John',
+  //     last_name: 'Doe',
+  //     gender: 'Male',
+  //     date_of_birth: '1985-05-20',
+  //   },
+  //   user: {
+  //     id: 1,
+  //     name: 'Dr. Sarah Smith',
+  //     email: 'sarah.smith@medassist.com',
+  //     role: 'doctor',
+  //   },
+  // };
 
   // Hardcoded observations
   const observations: IObservation[] = [
@@ -231,6 +236,19 @@ export const EncounterDetails = () => {
               </Button>
             </div>
           )}
+          {encounter.status === 'INITIALIZED' && (
+            <div className="flex gap-2 sm:flex-shrink-0">
+              <Button
+                type="button"
+                disabled={false}
+                loading={false}
+                onClick={() => {}}
+                className="bg-blue-600 text-white px-3 sm:px-4 py-2 text-sm sm:text-base rounded-md hover:bg-blue-700 transition-colors font-medium w-full sm:w-auto"
+              >
+                Start Consultation
+              </Button>
+            </div>
+          )}
         </div>
       </div>
 
@@ -260,94 +278,7 @@ export const EncounterDetails = () => {
       <div className="p-4 sm:p-6">
         {/* Overview Tab */}
         {activeTab === 'overview' && (
-          <div className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="bg-blue-50 rounded-lg p-4">
-                <div className="text-sm text-gray-600 mb-1">Observations</div>
-                <div className="text-2xl font-bold text-blue-600">
-                  {observations.length}
-                </div>
-              </div>
-              <div className="bg-green-50 rounded-lg p-4">
-                <div className="text-sm text-gray-600 mb-1">Diagnoses</div>
-                <div className="text-2xl font-bold text-green-600">
-                  {diagnoses.length}
-                </div>
-              </div>
-              <div className="bg-purple-50 rounded-lg p-4">
-                <div className="text-sm text-gray-600 mb-1">Treatments</div>
-                <div className="text-2xl font-bold text-purple-600">
-                  {treatments.length}
-                </div>
-              </div>
-            </div>
-
-            <div>
-              <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3">
-                Latest Vital Signs
-              </h3>
-              <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
-                {observations.map((obs) => (
-                    <div
-                      key={obs.id}
-                      className="bg-gray-50 rounded-lg p-3 sm:p-4 border border-gray-200"
-                    >
-                    <div className="text-xl sm:text-2xl mb-2 flex items-center justify-center">
-                      {getObservationIcon(obs.type)}
-                    </div>
-                    <div className="text-xs text-gray-600 mb-1 truncate">
-                      {obs.type.replace(/_/g, ' ')}
-                    </div>
-                    <div className="text-base sm:text-lg font-bold text-gray-900">
-                      {obs.value} {obs.unit}
-                    </div>
-                    <div className="text-xs text-gray-500 mt-1 truncate">
-                      {formatDateTime(obs.recorded_at)}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {diagnoses.length > 0 && (
-              <div>
-                <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3">
-                  Primary Diagnosis
-                </h3>
-                {diagnoses
-                  .filter((d) => d.is_primary)
-                  .map((diagnosis) => (
-                    <div
-                      key={diagnosis.id}
-                      className="bg-yellow-50 border-l-4 border-yellow-400 rounded p-4"
-                    >
-                      <div className="flex items-center gap-2 mb-1">
-                        <FaStar className="text-yellow-600" />
-                        <span className="font-semibold text-gray-900">
-                          {diagnosis.label}
-                        </span>
-                      </div>
-                      {diagnosis.code && (
-                        <div className="text-sm text-gray-600">
-                          ICD-10: {diagnosis.code}
-                        </div>
-                      )}
-                    </div>
-                  ))}
-              </div>
-            )}
-
-            {encounter.summary && (
-              <div>
-                <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3">
-                  Summary
-                </h3>
-                <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                  <p className="text-gray-700">{encounter.summary}</p>
-                </div>
-              </div>
-            )}
-          </div>
+          <EncounterOverview encounter={encounter} />
         )}
 
         {/* Observations Tab */}

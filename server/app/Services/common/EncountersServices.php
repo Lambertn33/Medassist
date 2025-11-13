@@ -30,7 +30,11 @@ class EncountersServices
 
     public function getEncounter(int $id): ?Encounter
     {
-        return Encounter::with('patient', 'user')->find($id);
+        return Encounter::with('patient', 'user')
+        ->withCount('observations')
+        ->withCount('diagnoses')
+        ->withCount('treatments')
+        ->find($id);
     }
 
     public function startConsultation(int $id): ?Encounter

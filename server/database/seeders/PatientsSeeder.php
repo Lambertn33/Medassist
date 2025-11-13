@@ -53,22 +53,12 @@ class PatientsSeeder extends Seeder
                 'summary' => 'Ongoing consultation for patient ' . $i,
             ]);
 
-            // Create INITIALIZED encounter
-            $initializedEncounter = Encounter::create([
-                'patient_id' => $patient->id,
-                'user_id' => $user->id,
-                'status' => Encounter::STATUS_INITIALIZED,
-                'started_at' => now()->subDays(rand(8, 30)),
-                'ended_at' => null,
-                'summary' => 'Initial consultation for patient ' . $i,
-            ]);
-
-            // Create observation for INITIALIZED encounter
+            // Create observations for IN_PROGRESS encounter (not INITIALIZED)
             $observationType = Observation::TYPES[rand(0, count(Observation::TYPES) - 1)];
             $observationData = [
-                'encounter_id' => $initializedEncounter->id,
+                'encounter_id' => $inProgressEncounter->id,
                 'type' => $observationType,
-                'recorded_at' => $initializedEncounter->started_at,
+                'recorded_at' => $inProgressEncounter->started_at,
             ];
 
             // Set value and unit based on observation type
@@ -93,23 +83,33 @@ class PatientsSeeder extends Seeder
 
             Observation::create($observationData);
 
-            // Create diagnosis for INITIALIZED encounter
+            // Create diagnosis for IN_PROGRESS encounter (not INITIALIZED)
             Diagnosis::create([
-                'encounter_id' => $initializedEncounter->id,
+                'encounter_id' => $inProgressEncounter->id,
                 'code' => 'ICD-' . rand(10, 99) . '.' . rand(10, 99),
                 'label' => 'Diagnosis for Patient ' . $i,
                 'is_primary' => true,
             ]);
 
-            // Create treatment for INITIALIZED encounter
+            // Create treatment for IN_PROGRESS encounter (not INITIALIZED)
             $treatmentType = Treatment::TYPES[rand(0, count(Treatment::TYPES) - 1)];
             Treatment::create([
-                'encounter_id' => $initializedEncounter->id,
+                'encounter_id' => $inProgressEncounter->id,
                 'type' => $treatmentType,
                 'description' => 'Treatment description for Patient ' . $i,
                 'dosage' => $treatmentType === Treatment::MEDICATION_TYPE ? '500mg' : ($treatmentType === Treatment::PROCEDURE_TYPE ? '1 hour' : '1 session'),
                 'duration' => rand(1, 14),
                 'notes' => 'Treatment notes for Patient ' . $i,
+            ]);
+
+            // Create INITIALIZED encounter (without observations, diagnoses, or treatments)
+            Encounter::create([
+                'patient_id' => $patient->id,
+                'user_id' => $user->id,
+                'status' => Encounter::STATUS_INITIALIZED,
+                'started_at' => now()->subDays(rand(8, 30)),
+                'ended_at' => null,
+                'summary' => 'Initial consultation for patient ' . $i,
             ]);
         }
     }

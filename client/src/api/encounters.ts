@@ -51,3 +51,17 @@ export const createEncounter = async (patientId: number) => {
     throw error;
   }
 };  
+
+export const getEncounter = async (id: number) => {
+  const token = localStorage.getItem('auth_token');
+  if (!token) {
+    throw new Error('No token found. Please login to access encounters.');
+  }
+
+  const response = await axios.get(`${API_URL}/common/encounters/${id}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.data;
+};

@@ -6,6 +6,9 @@ export interface IEncounter {
     started_at: string;
     ended_at: string;
     summary: string;
+    observations_count?: number;
+    diagnoses_count?: number;
+    treatments_count?: number;
     patient: {
         id: number;
         first_name: string;
