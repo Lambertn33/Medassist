@@ -126,10 +126,10 @@ export const EncountersList = ({
                   </td>
                   <td className="px-6 py-4 flex gap-2">
                     <Link
-                      to={`/dashboard/patients/${encounter.patient_id}`}
+                      to={`/dashboard/patients/${encounter.patient.id}`}
                       className="inline-block px-4 py-2 cursor-pointer bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors font-medium"
                     >
-                      View
+                      View Patient
                     </Link>
                     {onDelete && (
                       <Button
