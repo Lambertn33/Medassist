@@ -67,6 +67,8 @@ export const EncounterDetails = ({ encounter }: { encounter: IEncounter }) => {
   const handleCloseEndConsultationModal = () => {
     setIsEndConsultationModalOpen(false);
     setSummary('');
+    // Reset mutation error state when closing modal
+    endConsultationMutation.reset();
   };
 
   const handleSummaryChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -75,6 +77,8 @@ export const EncounterDetails = ({ encounter }: { encounter: IEncounter }) => {
 
   const handleEndConsultation = (e: React.FormEvent) => {
     e.preventDefault();
+    // Reset any previous errors before submitting
+    endConsultationMutation.reset();
     endConsultationMutation.mutate(
       { id: encounter.id, summary },
       {
@@ -126,7 +130,7 @@ export const EncounterDetails = ({ encounter }: { encounter: IEncounter }) => {
   return (
     <>
       {showToast && (
-        <div className="fixed top-20 right-4 z-50 transition-all duration-300 ease-in-out">
+        <div className="fixed top-20 right-4 z-[100] transition-all duration-300 ease-in-out">
           <Toast
             message={toastMessage}
             type={toastType}
