@@ -22,4 +22,32 @@ export const getEncounters = async (patientId?: number | null, status?: string |
     },
   });
   return response.data;
+};
+
+export const createEncounter = async (patientId: number) => {
+  const token = localStorage.getItem('auth_token');
+  if (!token) {
+    throw new Error('No token found. Please login to create encounters.');
+  }
+
+  try {
+    const response = await axios.post(
+      `${API_URL}/common/encounters`,
+      { patient_id: patientId },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response) {
+      const errorMessage = error.response.data?.message || 'Failed to create encounter';
+      const errors = error.response.data?.errors;
+      throw new Error(errors ? JSON.stringify(errors) : errorMessage);
+    }
+    throw error;
+  }
 };  
