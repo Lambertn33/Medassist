@@ -22,7 +22,7 @@ class DashboardController extends Controller
         $encounters = Encounter::count();
         $inProgressEncounters = Encounter::where('status', Encounter::STATUS_IN_PROGRESS)->count();
         $completedEncounters = Encounter::where('status', Encounter::STATUS_COMPLETED)->count();
-        $cancelledEncounters = Encounter::where('status', Encounter::STATUS_CANCELLED)->count();
+        $cancelledEncounters = Encounter::where('status', Encounter::STATUS_CANCELED)->count();
         $observations = Observation::count();
         $diagnoses = Diagnosis::count();
         $treatments = Treatment::count();
