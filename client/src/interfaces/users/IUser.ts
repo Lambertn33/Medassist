@@ -5,3 +5,11 @@ export interface IUser {
     role: string;
     last_login_at: string | null;
 }
+
+export interface ICreateUser {
+    name: string;
+    email: string;
+    password: string;
+    password_confirmation: string;
+    role: string;
+}

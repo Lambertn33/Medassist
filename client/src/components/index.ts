@@ -35,6 +35,7 @@ import { EncountersFilter } from './encounters/EncountersFilter';
 import { EncounterDetails } from './encounters/EncounterDetails';
 
 import { UsersList } from './users/UsersList';
+import { UserForm } from './users/UserForm';
 
 export { 
     LoginForm,
@@ -62,6 +63,7 @@ export {
     EncountersFilter,
     EncounterDetails,
     UsersList,
+    UserForm,
     Card,
     Textarea
 };
