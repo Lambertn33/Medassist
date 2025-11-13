@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useParams } from 'react-router';
+import { Link, useParams } from 'react-router';
 import { Button, Toast } from '@/components';
 import { formatDateTime } from '@/utils';
 
@@ -173,8 +173,7 @@ export const EncounterDetails = ({ encounter }: { encounter: IEncounter }) => {
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
           <div className="flex-1 min-w-0">
             <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 mb-2 break-words">
-              Encounter #{encounter.id} - {encounter.patient.first_name}{' '}
-              {encounter.patient.last_name}
+              Encounter #{encounter.id} - <Link to={`/dashboard/patients/${encounter.patient.id}`} className="text-blue-600 hover:text-blue-700 transition-colors">{encounter.patient.first_name} {encounter.patient.last_name}</Link>
             </h2>
             <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-xs sm:text-sm text-gray-600">
               <div className="flex items-center gap-2">

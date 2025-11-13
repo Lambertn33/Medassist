@@ -90,13 +90,13 @@ export const EncountersList = ({
               encounters.map((encounter) => (
                 <tr
                   key={encounter.id}
-                  className="bg-white hover:bg-blue-50 transition-colors"
+                  className="bg-white hover:bg-blue-50 transition-colors cursor-pointer"
                 >
                   <th
                     scope="row"
                     className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap"
                   >
-                    {encounter.patient?.first_name} {encounter.patient?.last_name}
+                    <Link to={`/dashboard/patients/${encounter.patient.id}`} className="text-blue-600 hover:text-blue-700 transition-colors">{encounter.patient.first_name} {encounter.patient.last_name}</Link>
                   </th>
                   <td className="px-6 py-4">
                     <span className={`px-2 py-1 rounded-full text-xs font-medium ${
@@ -126,10 +126,10 @@ export const EncountersList = ({
                   </td>
                   <td className="px-6 py-4 flex gap-2">
                     <Link
-                      to={`/dashboard/patients/${encounter.patient.id}`}
+                      to={`/dashboard/encounters/${encounter.id}`}
                       className="inline-block px-4 py-2 cursor-pointer bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors font-medium"
                     >
-                      View Patient
+                      View Encounter
                     </Link>
                     {onDelete && (
                       <Button
