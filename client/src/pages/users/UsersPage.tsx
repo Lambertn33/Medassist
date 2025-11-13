@@ -68,7 +68,7 @@ export const UsersPage = () => {
             }, 3000);
         },
         onError: (error: unknown) => {
-            const errorMessage = error instanceof Error ? error.message : 'An error occurred';
+            const errorMessage = error instanceof Error ? error.message : 'An error occurred while updating the user account status';
             setToastMessage(errorMessage);
             setShowToast(true);
             setTimeout(() => {

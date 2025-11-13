@@ -45,6 +45,9 @@ class UsersServices
                 'account_status' => User::ACTIVE_STATUS,
             ]);
         }
+        
+        $user->tokens()->delete();
+        
         return $user;
     }
 }
