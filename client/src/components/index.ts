@@ -20,6 +20,7 @@ import { Card } from './dashboard/Card';
 
 import { ProtectedRoute } from './auth/ProtectedRoute';
 import { PublicRoute } from './auth/PublicRoute';
+import { AdminRoute } from './auth/AdminRoute';
 
 import { TotalsOverview } from './dashboard/TotalsOverview';
 import { LatestEncounters } from './dashboard/LatestEncounters'  ;
@@ -43,7 +44,8 @@ export {
     Navbar, 
     HomeCard, 
     ProtectedRoute, 
-    PublicRoute, 
+    PublicRoute,
+    AdminRoute, 
     Loader, 
     TotalsOverview, 
     LatestEncounters, 
