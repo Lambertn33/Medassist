@@ -1,8 +1,7 @@
 import { FaStethoscope, FaPlus, FaSpinner } from 'react-icons/fa';
 import type { IPatientDetails } from '@/interfaces/patients/IPatient';
 import { PatientDetailsInfo, PatientDetailsEncounters, Card, Button } from '@/components';
-
-import { Link } from 'react-router';
+import { useNavigate } from 'react-router';
 
 interface PatientDetailsProps {
   patientDetails: IPatientDetails;
@@ -17,6 +16,13 @@ export const PatientDetails = ({
   onCreateEncounter,
   isCreatingEncounter = false 
 }: PatientDetailsProps) => {
+  const navigate = useNavigate();
+
+  const handleBack = () => {
+    if (!isCreatingEncounter) {
+      navigate(-1);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -32,12 +38,15 @@ export const PatientDetails = ({
             </p>
           </div>
           <div className="flex flex-col sm:flex-row gap-3">
-              <Link 
-                to={!isCreatingEncounter ? `/dashboard/patients/${patientDetails.id}` : '#'} 
-                className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition-colors font-medium text-center sm:text-left"
-              >
-                Back
-              </Link>
+            <Button
+              type="button"
+              disabled={isCreatingEncounter}
+              loading={false}
+              onClick={handleBack}
+              className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition-colors font-medium text-center sm:text-left disabled:bg-gray-100 disabled:cursor-not-allowed"
+            >
+              Back
+            </Button>
             <Button 
               disabled={isCreatingEncounter}
               type="button"
