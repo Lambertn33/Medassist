@@ -1,6 +1,6 @@
 import { Link } from 'react-router';
 import type { IPatientBase } from '@/interfaces/patients/IPatient';
-import { PatientsSearch, Loader, Button } from '@/components';
+import { TableSearch, Loader, Button } from '@/components';
 import { formatDate } from '@/utils';
 
 interface PatientsListProps {
@@ -27,7 +27,7 @@ export const PatientsList = ({
     <div className="bg-white rounded-lg shadow-sm overflow-hidden">
       <div className="overflow-x-auto">
         <div className="my-4 mx-6 flex justify-end">
-          <PatientsSearch value={searchValue} onChange={onSearchChange} />
+          <TableSearch value={searchValue} onChange={onSearchChange} />
         </div>
         <table className="w-full text-sm text-left text-gray-500">
           <thead className="text-xs text-gray-700 uppercase bg-gray-50 border-b border-gray-200">
