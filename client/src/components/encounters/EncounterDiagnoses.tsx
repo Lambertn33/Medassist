@@ -6,22 +6,27 @@ interface IEncounterDiagnoses {
   diagnoses: IDiagnosis[];
   isLoadingDiagnoses: boolean;
   diagnosesError: Error | null;
+  isEncounterConsultationStarted: boolean;
 }
 
-export const EncounterDiagnoses = ({ diagnoses, isLoadingDiagnoses, diagnosesError }: IEncounterDiagnoses) => {
+export const EncounterDiagnoses = ({ diagnoses, isLoadingDiagnoses, diagnosesError, isEncounterConsultationStarted }: IEncounterDiagnoses) => {
   return (
     <div className="space-y-4">
     <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-4">
       <h3 className="text-base sm:text-lg font-semibold text-gray-900">Diagnoses</h3>
-      <Button
-        type="button"
-        disabled={false}
-        loading={false}
-        onClick={() => {}}
-        className="bg-green-600 text-white px-3 sm:px-4 py-2 text-sm sm:text-base rounded-md hover:bg-green-700 transition-colors font-medium w-full sm:w-auto"
-      >
-        + Add Diagnosis
-      </Button>
+      {
+        isEncounterConsultationStarted && (
+          <Button
+            type="button"
+            disabled={false}
+            loading={false}
+            onClick={() => {}}
+            className="bg-green-600 text-white px-3 sm:px-4 py-2 text-sm sm:text-base rounded-md hover:bg-green-700 transition-colors font-medium w-full sm:w-auto"
+          >
+            + Add Diagnosis
+          </Button>
+        )
+      }
     </div>
 
     {isLoadingDiagnoses ? (

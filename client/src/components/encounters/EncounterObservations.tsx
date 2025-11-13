@@ -7,9 +7,10 @@ interface IEncounterObservations {
   observations: IObservation[];
   isLoadingObservations: boolean;
   observationsError: Error | null;
+  isEncounterConsultationStarted: boolean;
 }
 
-export const EncounterObservations = ({ observations, isLoadingObservations, observationsError }: IEncounterObservations) => {
+export const EncounterObservations = ({ observations, isLoadingObservations, observationsError, isEncounterConsultationStarted }: IEncounterObservations) => {
   const getObservationIcon = (type: string) => {
     switch (type) {
       case 'TEMPERATURE':
@@ -28,15 +29,19 @@ export const EncounterObservations = ({ observations, isLoadingObservations, obs
     <div className="space-y-4">
     <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-4">
       <h3 className="text-base sm:text-lg font-semibold text-gray-900">Vital Signs</h3>
-      <Button
-        type="button"
-        disabled={false}
-        loading={false}
-        onClick={() => {}}
-        className="bg-blue-600 text-white px-3 sm:px-4 py-2 text-sm sm:text-base rounded-md hover:bg-blue-700 transition-colors font-medium w-full sm:w-auto"
-      >
-        + Add Observation
-      </Button>
+      {
+        isEncounterConsultationStarted && (
+          <Button
+            type="button"
+            disabled={false}
+            loading={false}
+            onClick={() => {}}
+            className="bg-blue-600 text-white px-3 sm:px-4 py-2 text-sm sm:text-base rounded-md hover:bg-blue-700 transition-colors font-medium w-full sm:w-auto"
+          >
+            + Add Observation
+          </Button>
+        )
+      }
     </div>
 
     {isLoadingObservations ? (

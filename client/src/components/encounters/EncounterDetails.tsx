@@ -170,6 +170,7 @@ export const EncounterDetails = ({ encounter }: { encounter: IEncounter }) => {
            observations={observations}
            isLoadingObservations={isLoadingObservations}
            observationsError={observationsError as Error | null}
+           isEncounterConsultationStarted={encounter.status === 'IN_PROGRESS'}
           />
         )}
 
@@ -179,6 +180,7 @@ export const EncounterDetails = ({ encounter }: { encounter: IEncounter }) => {
            diagnoses={diagnoses}
            isLoadingDiagnoses={isLoadingDiagnoses}
            diagnosesError={diagnosesError as Error | null}
+           isEncounterConsultationStarted={encounter.status === 'IN_PROGRESS'}
           />
         )}
 
@@ -188,6 +190,7 @@ export const EncounterDetails = ({ encounter }: { encounter: IEncounter }) => {
            treatments={treatments}
            isLoadingTreatments={isLoadingTreatments}
            treatmentsError={treatmentsError as Error | null}
+           isEncounterConsultationStarted={encounter.status === 'IN_PROGRESS'}
           />
         )}
       </div>
