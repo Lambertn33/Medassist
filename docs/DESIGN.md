@@ -512,6 +512,14 @@ All routes are protected by `auth:sanctum` and require `admin`, `doctor`, or `nu
 - **FHIR Integration** — standardize data exchange with national EMR systems.
 - **Analytics Dashboard** — visualize encounter data and patient metrics.
 - **Role-based Access Control (RBAC)** using Spatie permissions.
+- **Data Management Enhancements** — pagination, table sorting, column filtering, and bulk operations for better data handling in large datasets.
+- **Reports Module** — comprehensive reporting system for each module (patients, encounters, observations, diagnoses, treatments) with date range selection, both as an interactive reports module within the application and downloadable formats (PDF, Excel, CSV) for external use and record-keeping.
+- **Audit Trail & Activity Logging** — comprehensive logging of all system activities (user actions, data changes, access logs) for compliance, security, and accountability in medical record management.
+- **Notifications & Alerts System** — real-time notifications for critical observations (e.g., high fever, abnormal blood pressure), follow-up reminders, appointment alerts, and system-wide announcements to improve patient care coordination.
+- **Patient History Timeline** — comprehensive chronological view of all patient encounters, observations, diagnoses, and treatments across time, enabling better continuity of care and trend analysis.
+- **Print Functionality** — ability to print encounter summaries, patient records, prescriptions, and reports in standardized formats for physical filing and external documentation needs.
+- **Appointment Scheduling** — appointment booking system to manage patient flow, reduce waiting times, and optimize clinic resources with calendar views and scheduling conflicts detection.
+- **Follow-up Management** — track and manage patient follow-up appointments, automated reminders for scheduled follow-ups, and flag patients requiring attention based on previous diagnoses or treatments.
 
 ---
 
@@ -520,7 +528,9 @@ All routes are protected by `auth:sanctum` and require `admin`, `doctor`, or `nu
 - Laravel Docs – [https://laravel.com/docs](https://laravel.com/docs)
 - React Docs – [https://react.dev](https://react.dev)
 - React Router Docs – [https://reactrouter.com](https://reactrouter.com)
-- TanStack Query Docs – [https://tanstack.com/query](https://tanstack.com/query)
+- TanStack Query (React Query) Docs – [https://tanstack.com/query](https://tanstack.com/query)
+- Tailwind CSS Docs – [https://tailwindcss.com/docs](https://tailwindcss.com/docs)
+- Vite Docs – [https://vite.dev](https://vite.dev)
 - e-fiche Challenge Instructions
 
 ---
