@@ -15,6 +15,7 @@ import { EncounterOverview } from './EncounterOverview';
 import { EncounterObservations } from './EncounterObservations';
 import { EncounterDiagnoses } from './EncounterDiagnoses';
 import { EncounterTreatments } from './EncounterTreatments';
+import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
 
 type TabType = 'overview' | 'observations' | 'diagnoses' | 'treatments';
 
@@ -155,19 +156,6 @@ export const EncounterDetails = ({ encounter }: { encounter: IEncounter }) => {
               </div>
             </div>
           </div>
-          {encounter.status === 'IN_PROGRESS' && (
-            <div className="flex gap-2 sm:flex-shrink-0">
-              <Button
-                type="button"
-                disabled={false}
-                loading={false}
-                onClick={() => {}}
-                className="bg-green-600 text-white px-3 sm:px-4 py-2 text-sm sm:text-base rounded-md hover:bg-green-700 transition-colors font-medium w-full sm:w-auto"
-              >
-                End Consultation
-              </Button>
-            </div>
-          )}
           {encounter.status === 'INITIALIZED' && (
             <div className="flex gap-2 sm:flex-shrink-0">
               <Button
@@ -179,6 +167,40 @@ export const EncounterDetails = ({ encounter }: { encounter: IEncounter }) => {
               >
                 {startConsultationMutation.isPending ? 'Starting...' : 'Start Consultation'}
               </Button>
+            </div>
+          )}
+          {encounter.status === 'IN_PROGRESS' && (
+            <div className="flex gap-2 sm:flex-shrink-0">
+              <Button
+                type="button"
+                disabled={false}
+                loading={false}
+                onClick={() => {}}
+                className="bg-green-600 text-white px-3 sm:px-4 py-2 text-sm sm:text-base rounded-md hover:bg-green-700 transition-colors font-medium w-full sm:w-auto"
+              >
+                End Consultation
+              </Button>
+              <Button
+                type="button"
+                disabled={false}
+                loading={false}
+                onClick={() => {}}
+                className="bg-red-600 text-white px-3 sm:px-4 py-2 text-sm sm:text-base rounded-md hover:bg-red-700 transition-colors font-medium w-full sm:w-auto"
+              >
+                Cancel Consultation
+              </Button>
+            </div>
+          )}
+          {encounter.status === 'COMPLETED' && (
+           <div className="flex gap-2 sm:flex-shrink-0">
+            <span className="text-green-600 text-sm sm:text-base">Consultation completed</span>
+            <FaCheckCircle className="text-green-600 text-sm sm:text-base" />
+           </div>
+          )}
+          {encounter.status === 'CANCELED' && (
+            <div className="flex gap-2 sm:flex-shrink-0">
+              <span className="text-red-600 text-sm sm:text-base">Consultation canceled</span>
+              <FaTimesCircle className="text-red-600 text-sm sm:text-base" />
             </div>
           )}
         </div>
