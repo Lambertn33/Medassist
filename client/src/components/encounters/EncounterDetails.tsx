@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { Button } from '@/components';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useParams } from 'react-router';
+import { Button, Toast } from '@/components';
 import { formatDateTime } from '@/utils';
 
 import type { IEncounter } from '@/interfaces/encounters/IEncounter';
@@ -8,7 +9,7 @@ import type { IObservation } from '@/interfaces/encounters/IObservation';
 import type { IDiagnosis } from '@/interfaces/encounters/IDiagnosis';
 import type { ITreatment } from '@/interfaces/encounters/ITreatment';
 
-import { getEncounterDiagnoses, getEncounterObservations, getEncounterTreatments } from '@/api/encounters';
+import { getEncounterDiagnoses, getEncounterObservations, getEncounterTreatments, startEncounterConsultation } from '@/api/encounters';
 
 import { EncounterOverview } from './EncounterOverview';
 import { EncounterObservations } from './EncounterObservations';
@@ -19,7 +20,12 @@ type TabType = 'overview' | 'observations' | 'diagnoses' | 'treatments';
 
 export const EncounterDetails = ({ encounter }: { encounter: IEncounter }) => {
   const [activeTab, setActiveTab] = useState<TabType>('overview');
-
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
+  const [toastType, setToastType] = useState<'success' | 'error'>('success');
+  const queryClient = useQueryClient();
+  const { encounterId } = useParams();
+  
   const { data: observationsData, isLoading: isLoadingObservations, error: observationsError } = useQuery<{ observations: IObservation[] }>({
     queryKey: ['encounter', encounter.id, 'observations'],
     queryFn: () => getEncounterObservations(encounter.id),
@@ -40,6 +46,40 @@ export const EncounterDetails = ({ encounter }: { encounter: IEncounter }) => {
     enabled: activeTab === 'treatments',
     staleTime: 30 * 1000,
   });
+
+  const startConsultationMutation = useMutation({
+    mutationFn: (id: number) => startEncounterConsultation(id),
+    onSuccess: async (data) => {
+      // Optimistically update the encounter data immediately
+      if (data?.encounter && encounterId) {
+        queryClient.setQueryData(['encounter', encounterId], { encounter: data.encounter });
+      }
+      
+      await queryClient.invalidateQueries({ queryKey: ['encounter', encounterId] });
+      await queryClient.refetchQueries({ queryKey: ['encounter', encounterId] });
+      queryClient.invalidateQueries({ queryKey: ['encounters'] });
+      
+      const message = data?.message as string || 'Consultation started successfully';
+      setToastMessage(message);
+      setToastType('success');
+      setShowToast(true);
+      setTimeout(() => {
+        setShowToast(false);
+      }, 3000);
+    },
+    onError: (error) => {
+      setToastMessage(error.message);
+      setToastType('error');
+      setShowToast(true);
+      setTimeout(() => {
+        setShowToast(false);
+      }, 3000);
+    },
+  });
+
+  const handleStartConsultation = () => {
+    startConsultationMutation.mutate(encounter.id);
+  }; 
 
   const observations = observationsData?.observations || [];
   const diagnoses = diagnosesData?.diagnoses || [];
@@ -80,7 +120,16 @@ export const EncounterDetails = ({ encounter }: { encounter: IEncounter }) => {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+    <>
+      {showToast && (
+        <div className="fixed top-20 right-4 z-50 transition-all duration-300 ease-in-out">
+          <Toast
+            message={toastMessage}
+            type={toastType}
+          />
+        </div>
+      )}
+      <div className="bg-white rounded-lg shadow-sm overflow-hidden">
       {/* Header */}
       <div className="bg-gradient-to-r from-blue-50 to-blue-100 px-4 sm:px-6 py-4 sm:py-6 border-b border-gray-200">
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
@@ -123,12 +172,12 @@ export const EncounterDetails = ({ encounter }: { encounter: IEncounter }) => {
             <div className="flex gap-2 sm:flex-shrink-0">
               <Button
                 type="button"
-                disabled={false}
-                loading={false}
-                onClick={() => {}}
+                disabled={startConsultationMutation.isPending}
+                loading={startConsultationMutation.isPending}
+                onClick={handleStartConsultation}
                 className="bg-blue-600 text-white px-3 sm:px-4 py-2 text-sm sm:text-base rounded-md hover:bg-blue-700 transition-colors font-medium w-full sm:w-auto"
               >
-                Start Consultation
+                {startConsultationMutation.isPending ? 'Starting...' : 'Start Consultation'}
               </Button>
             </div>
           )}
@@ -195,6 +244,7 @@ export const EncounterDetails = ({ encounter }: { encounter: IEncounter }) => {
         )}
       </div>
     </div>
+    </>
   );
 };
 

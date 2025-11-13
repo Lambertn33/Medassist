@@ -80,6 +80,22 @@ export const getEncounterObservations = async (id: number) => {
   return response.data; 
 };
 
+export const startEncounterConsultation = async (id: number) => {
+  const token = localStorage.getItem('auth_token');
+  if (!token) {
+    throw new Error('No token found. Please login to start consultation.');
+  }
+
+  const response = await axios.put(`${API_URL}/common/encounters/${id}/start-consultation`, {
+    Authorization: `Bearer ${token}`,
+  }, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.data;
+};
+
 export const getEncounterDiagnoses = async (id: number) => {
   const token = localStorage.getItem('auth_token');
   if (!token) {
