@@ -121,8 +121,6 @@ export const EncounterDetails = ({ encounter }: { encounter: IEncounter }) => {
   const diagnoses = diagnosesData?.diagnoses || [];
   const treatments = treatmentsData?.treatments || [];
 
-  const canEndConsultation = encounter.status === 'IN_PROGRESS' && observations.length > 0 && diagnoses.length > 0;
-
   const getStatusBadge = (status: string) => {
     const statusColors: Record<string, string> = {
       INITIALIZED: 'bg-gray-100 text-gray-800',
@@ -278,6 +276,7 @@ export const EncounterDetails = ({ encounter }: { encounter: IEncounter }) => {
            isLoadingObservations={isLoadingObservations}
            observationsError={observationsError as Error | null}
            isEncounterConsultationStarted={encounter.status === 'IN_PROGRESS'}
+           encounterId={encounter.id}
           />
         )}
 

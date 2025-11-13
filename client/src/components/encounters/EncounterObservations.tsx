@@ -1,7 +1,10 @@
 import { useState } from 'react';
-import type { IObservation } from '@/interfaces/encounters/IObservation';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useParams } from 'react-router';
+import type { ICreateObservation, IObservation } from '@/interfaces/encounters/IObservation';
 import { formatDateTime } from '@/utils';
-import { Button, Loader, Modal, Input, Select } from '@/components';
+import { Button, Loader, Modal, Input, Select, Toast } from '@/components';
+import { createEncounterObsevation } from '@/api/encounters';
 import { FaHeart, FaHeartbeat, FaLungs, FaQuestion, FaThermometerHalf } from 'react-icons/fa';
 
 interface IEncounterObservations {
@@ -9,6 +12,7 @@ interface IEncounterObservations {
   isLoadingObservations: boolean;
   observationsError: Error | null;
   isEncounterConsultationStarted: boolean;
+  encounterId: number;
 }
 
 const OBSERVATION_TYPES = [
@@ -33,12 +37,51 @@ const getUnitForType = (type: string): string => {
   }
 };
 
-export const EncounterObservations = ({ observations, isLoadingObservations, observationsError, isEncounterConsultationStarted }: IEncounterObservations) => {
+export const EncounterObservations = ({ observations, isLoadingObservations, observationsError, isEncounterConsultationStarted, encounterId }: IEncounterObservations) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
+  const [toastType, setToastType] = useState<'success' | 'error'>('success');
+  const queryClient = useQueryClient();
+  const { encounterId: encounterIdParam } = useParams();
+  
   const [formData, setFormData] = useState({
     type: '',
     value: '',
     unit: '',
+  });
+
+  // Create observation mutation
+  const createObservationMutation = useMutation({
+    mutationFn: (observation: ICreateObservation) => 
+      createEncounterObsevation(encounterId, observation),
+    onSuccess: async (data) => {
+      await queryClient.invalidateQueries({ queryKey: ['encounter', encounterId, 'observations'] });
+      await queryClient.refetchQueries({ queryKey: ['encounter', encounterId, 'observations'] });
+      
+      if (encounterIdParam) {
+        queryClient.invalidateQueries({ queryKey: ['encounter', encounterIdParam] });
+      }
+      queryClient.invalidateQueries({ queryKey: ['encounters'] });
+      
+      const message = data?.message as string || 'Observation created successfully';
+      setToastMessage(message);
+      setToastType('success');
+      setShowToast(true);
+      setTimeout(() => {
+        setShowToast(false);
+      }, 3000);
+      
+      handleCloseModal();
+    },
+    onError: (error) => {
+      setToastMessage(error.message);
+      setToastType('error');
+      setShowToast(true);
+      setTimeout(() => {
+        setShowToast(false);
+      }, 3000);
+    },
   });
 
   const getObservationIcon = (type: string) => {
@@ -80,12 +123,23 @@ export const EncounterObservations = ({ observations, isLoadingObservations, obs
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log(formData);
-    handleCloseModal();
+    createObservationMutation.mutate({
+      type: formData.type as 'TEMPERATURE' | 'BLOOD_PRESSURE' | 'HEART_RATE' | 'OXYGEN_SATURATION',
+      value: formData.value,
+      unit: formData.unit
+    });
   };
 
   return (
     <>
+      {showToast && (
+        <div className="fixed top-20 right-4 z-50 transition-all duration-300 ease-in-out">
+          <Toast
+            message={toastMessage}
+            type={toastType}
+          />
+        </div>
+      )}
       <div className="space-y-4">
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-4">
           <h3 className="text-base sm:text-lg font-semibold text-gray-900">Vital Signs</h3>
@@ -220,11 +274,11 @@ export const EncounterObservations = ({ observations, isLoadingObservations, obs
             </Button>
             <Button
               type="submit"
-              disabled={!formData.type || !formData.value}
-              loading={false}
+              disabled={!formData.type || !formData.value || createObservationMutation.isPending}
+              loading={createObservationMutation.isPending}
               className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors font-medium disabled:bg-gray-300 disabled:cursor-not-allowed"
             >
-              Add Observation
+              {createObservationMutation.isPending ? 'Adding...' : 'Add Observation'}
             </Button>
           </div>
         </form>

@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { API_URL } from './constants';
+import type { ICreateObservation } from '@/interfaces/encounters/IObservation';
 
 export const getEncounters = async (patientId?: number | null, status?: string | null) => {
   const token = localStorage.getItem('auth_token');
@@ -78,6 +79,21 @@ export const getEncounterObservations = async (id: number) => {
     },
   });
   return response.data; 
+};
+
+export const createEncounterObsevation = async (id: number, observation: ICreateObservation) => {
+  const token = localStorage.getItem('auth_token');
+  if (!token) {
+    throw new Error('No token found. Please login to create observation.');
+  }
+
+  const response = await axios.post(`${API_URL}/common/encounters/${id}/observations`, observation, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+  });
+  return response.data;
 };
 
 export const startEncounterConsultation = async (id: number) => {
