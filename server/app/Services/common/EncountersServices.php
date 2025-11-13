@@ -63,4 +63,17 @@ class EncountersServices
         ]);
         return $encounter;
     }
+
+    public function cancelConsultation(int $id): ?Encounter
+    {
+        $encounter = $this->getEncounter($id);
+        if (! $encounter) {
+            return null;
+        }
+        $encounter->update([
+            'status' => Encounter::STATUS_CANCELED,
+            'ended_at' => now(),
+        ]);
+        return $encounter;
+    }
 }

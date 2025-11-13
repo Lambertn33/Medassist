@@ -86,13 +86,36 @@ export const startEncounterConsultation = async (id: number) => {
     throw new Error('No token found. Please login to start consultation.');
   }
 
-  const response = await axios.put(`${API_URL}/common/encounters/${id}/start-consultation`, {
-    Authorization: `Bearer ${token}`,
-  }, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  const response = await axios.put(
+    `${API_URL}/common/encounters/${id}/start-consultation`,
+    {},
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    }
+  );
+  return response.data;
+};
+
+
+export const cancelEncounterConsultation = async (id: number) => {
+  const token = localStorage.getItem('auth_token');
+  if (!token) {
+    throw new Error('No token found. Please login to cancel consultation.');
+  }
+
+  const response = await axios.put(
+    `${API_URL}/common/encounters/${id}/cancel-consultation`,
+    {},
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    }
+  );
   return response.data;
 };
 

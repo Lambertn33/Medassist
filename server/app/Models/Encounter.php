@@ -14,7 +14,7 @@ class Encounter extends Model
     const STATUS_INITIALIZED = self::STATUSES[0];
     const STATUS_IN_PROGRESS = self::STATUSES[1];
     const STATUS_COMPLETED   = self::STATUSES[2];
-    const STATUS_CANCELLED   = self::STATUSES[3];
+    const STATUS_CANCELED   = self::STATUSES[3];
 
     protected $fillable = [
         'patient_id',

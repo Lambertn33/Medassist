@@ -9,7 +9,7 @@ import type { IObservation } from '@/interfaces/encounters/IObservation';
 import type { IDiagnosis } from '@/interfaces/encounters/IDiagnosis';
 import type { ITreatment } from '@/interfaces/encounters/ITreatment';
 
-import { getEncounterDiagnoses, getEncounterObservations, getEncounterTreatments, startEncounterConsultation } from '@/api/encounters';
+import { cancelEncounterConsultation, getEncounterDiagnoses, getEncounterObservations, getEncounterTreatments, startEncounterConsultation } from '@/api/encounters';
 
 import { EncounterOverview } from './EncounterOverview';
 import { EncounterObservations } from './EncounterObservations';
@@ -48,6 +48,7 @@ export const EncounterDetails = ({ encounter }: { encounter: IEncounter }) => {
     staleTime: 30 * 1000,
   });
 
+
   const startConsultationMutation = useMutation({
     mutationFn: (id: number) => startEncounterConsultation(id),
     onSuccess: async (data) => {
@@ -78,13 +79,49 @@ export const EncounterDetails = ({ encounter }: { encounter: IEncounter }) => {
     },
   });
 
+  const cancelConsultationMutation = useMutation({
+    mutationFn: (id: number) => cancelEncounterConsultation(id),
+    onSuccess: async (data) => {
+      // Optimistically update the encounter data immediately
+      if (data?.encounter && encounterId) {
+        queryClient.setQueryData(['encounter', encounterId], { encounter: data.encounter });
+      }
+      
+      // Invalidate and refetch queries to ensure data consistency
+      await queryClient.invalidateQueries({ queryKey: ['encounter', encounterId] });
+      await queryClient.refetchQueries({ queryKey: ['encounter', encounterId] });
+      await queryClient.invalidateQueries({ queryKey: ['encounters'] });
+      
+      const message = data?.message as string || 'Consultation canceled successfully';
+      setToastMessage(message);
+      setToastType('success');
+      setShowToast(true);
+      setTimeout(() => {
+        setShowToast(false);
+      }, 3000);
+    },
+    onError: (error) => {
+      setToastMessage(error.message);
+      setToastType('error');
+      setShowToast(true);
+      setTimeout(() => {
+        setShowToast(false);
+      }, 3000);
+    },
+  });
+
   const handleStartConsultation = () => {
     startConsultationMutation.mutate(encounter.id);
   }; 
+  const handleCancelConsultation = () => {
+    cancelConsultationMutation.mutate(encounter.id);
+  };
 
   const observations = observationsData?.observations || [];
   const diagnoses = diagnosesData?.diagnoses || [];
   const treatments = treatmentsData?.treatments || [];
+
+  const canEndConsultation = encounter.status === 'IN_PROGRESS' && observations.length > 0 && diagnoses.length > 0;
 
   const getStatusBadge = (status: string) => {
     const statusColors: Record<string, string> = {
@@ -133,7 +170,7 @@ export const EncounterDetails = ({ encounter }: { encounter: IEncounter }) => {
       <div className="bg-white rounded-lg shadow-sm overflow-hidden">
       {/* Header */}
       <div className="bg-gradient-to-r from-blue-50 to-blue-100 px-4 sm:px-6 py-4 sm:py-6 border-b border-gray-200">
-        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
           <div className="flex-1 min-w-0">
             <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 mb-2 break-words">
               Encounter #{encounter.id} - {encounter.patient.first_name}{' '}
@@ -176,15 +213,15 @@ export const EncounterDetails = ({ encounter }: { encounter: IEncounter }) => {
                 disabled={false}
                 loading={false}
                 onClick={() => {}}
-                className="bg-green-600 text-white px-3 sm:px-4 py-2 text-sm sm:text-base rounded-md hover:bg-green-700 transition-colors font-medium w-full sm:w-auto"
+                className="bg-green-600 disabled:bg-green-400 disabled:cursor-not-allowed text-white px-3 sm:px-4 py-2 text-sm sm:text-base rounded-md hover:bg-green-700 transition-colors font-medium w-full sm:w-auto"
               >
                 End Consultation
               </Button>
               <Button
                 type="button"
-                disabled={false}
-                loading={false}
-                onClick={() => {}}
+                disabled={cancelConsultationMutation.isPending}
+                loading={cancelConsultationMutation.isPending}
+                onClick={handleCancelConsultation}
                 className="bg-red-600 text-white px-3 sm:px-4 py-2 text-sm sm:text-base rounded-md hover:bg-red-700 transition-colors font-medium w-full sm:w-auto"
               >
                 Cancel Consultation
@@ -198,9 +235,9 @@ export const EncounterDetails = ({ encounter }: { encounter: IEncounter }) => {
            </div>
           )}
           {encounter.status === 'CANCELED' && (
-            <div className="flex gap-2 sm:flex-shrink-0">
-              <span className="text-red-600 text-sm sm:text-base">Consultation canceled</span>
-              <FaTimesCircle className="text-red-600 text-sm sm:text-base" />
+            <div className="flex gap-2 sm:flex-shrink-0 items-center">
+              <span className="text-red-600 text-sm sm:text-base font-bold">Consultation canceled</span>
+              <FaTimesCircle className="text-red-600 text-sm sm:text-base ml-2" />
             </div>
           )}
         </div>
