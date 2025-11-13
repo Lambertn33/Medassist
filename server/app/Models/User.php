@@ -15,6 +15,10 @@ class User extends Authenticatable
     use HasFactory, Notifiable, HasApiTokens;
 
     const ROLES = ['ADMIN', 'DOCTOR', 'NURSE'];
+    const ACCOUNT_STATUS = ['ACTIVE', 'CLOSED'];
+
+    const ACTIVE_STATUS = self::ACCOUNT_STATUS[0];
+    const CLOSED_STATUS = self::ACCOUNT_STATUS[1];
 
     const ADMIN_ROLE = self::ROLES[0];
     const DOCTOR_ROLE = self::ROLES[1];
@@ -30,7 +34,8 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
-        'last_login_at'
+        'last_login_at',
+        'account_status',
     ];
 
     /**

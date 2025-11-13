@@ -11,7 +11,7 @@ class UsersServices
     public function getAllUsers(?string $search = null)
     {
         $query = User::query()
-            ->select('id', 'name', 'email', 'role', 'last_login_at');
+            ->select('id', 'name', 'email', 'role', 'last_login_at', 'account_status');
 
         if ($search) {
             $query->where(function ($q) use ($search) {
@@ -30,7 +30,7 @@ class UsersServices
 
     public function viewUser(int $id): ?User
     {
-        return User::select('id', 'name', 'email', 'role', 'last_login_at')
+        return User::select('id', 'name', 'email', 'role', 'last_login_at', 'account_status')
             ->find($id);
     }
 }

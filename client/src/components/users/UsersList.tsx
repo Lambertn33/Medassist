@@ -23,6 +23,14 @@ const getRoleBadgeColor = (role: string) => {
   }
 };
 
+const getAccountStatusBadgeColor = (account_status: string) => {
+  switch (account_status) {
+    case 'ACTIVE':
+      return 'bg-green-100 text-green-800';
+    case 'CLOSED':
+      return 'bg-red-100 text-red-800';
+  }
+};  
 export const UsersList = ({ 
   users, 
   searchValue, 
@@ -48,6 +56,9 @@ export const UsersList = ({
               </th>
               <th scope="col" className="px-6 py-4 font-semibold">
                 Role
+              </th>
+              <th scope="col" className="px-6 py-4 font-semibold">
+                Account Status
               </th>
               <th scope="col" className="px-6 py-4 font-semibold">
                 Last Login
@@ -94,6 +105,11 @@ export const UsersList = ({
                   <td className="px-6 py-4">
                     <span className={`px-2 py-1 rounded-full text-xs font-semibold ${getRoleBadgeColor(user.role)}`}>
                       {user.role}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className={`px-2 py-1 rounded-full text-xs font-semibold ${getAccountStatusBadgeColor(user.account_status)}`}>
+                      {user.account_status}
                     </span>
                   </td>
                   <td className="px-6 py-4 text-gray-700">
