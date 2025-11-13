@@ -1,9 +1,8 @@
 import { useState } from 'react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useParams } from 'react-router';
-import type { ICreateTreatment, ITreatment } from '@/interfaces/encounters/ITreatment';
+import type { ITreatment } from '@/interfaces/encounters/ITreatment';
 import { Button, Loader, Modal, Input, Select, Toast, Textarea } from '@/components';
-import { createEncounterTreatment } from '@/api/encounters';
+import { useToast } from '@/hooks/useToast';
+import { useCreateTreatment } from '@/hooks/encounters/useCreateTreatment';
 import { FaPills, FaHospital, FaComments } from 'react-icons/fa';
 
 interface IEncounterTreatments {
@@ -22,11 +21,7 @@ const TREATMENT_TYPES = [
 
 export const EncounterTreatments = ({ treatments, isLoadingTreatments, treatmentsError, isEncounterConsultationStarted, encounterId }: IEncounterTreatments) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [showToast, setShowToast] = useState(false);
-  const [toastMessage, setToastMessage] = useState('');
-  const [toastType, setToastType] = useState<'success' | 'error'>('success');
-  const queryClient = useQueryClient();
-  const { encounterId: encounterIdParam } = useParams();
+  const { showToast, toastMessage, toastType, showSuccessToast, showErrorToast } = useToast();
   
   const [formData, setFormData] = useState({
     type: '',
@@ -36,46 +31,20 @@ export const EncounterTreatments = ({ treatments, isLoadingTreatments, treatment
     notes: '',
   });
 
-  // Create treatment mutation
-  const createTreatmentMutation = useMutation({
-    mutationFn: (treatment: ICreateTreatment) => 
-      createEncounterTreatment(encounterId, treatment),
-    onSuccess: async (data) => {
-      await queryClient.invalidateQueries({ queryKey: ['encounter', encounterId, 'treatments'] });
-      await queryClient.refetchQueries({ queryKey: ['encounter', encounterId, 'treatments'] });
-      
-      if (encounterIdParam) {
-        queryClient.invalidateQueries({ queryKey: ['encounter', encounterIdParam] });
-      }
-      queryClient.invalidateQueries({ queryKey: ['encounters'] });
-      
-      const message = data?.message as string || 'Treatment created successfully';
-      setToastMessage(message);
-      setToastType('success');
-      setShowToast(true);
-      setTimeout(() => {
-        setShowToast(false);
-      }, 3000);
-      
-      handleCloseModal();
-    },
-    onError: (error) => {
-      setToastMessage(error.message);
-      setToastType('error');
-      setShowToast(true);
-      setTimeout(() => {
-        setShowToast(false);
-      }, 3000);
-    },
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setFormData({ type: '', description: '', dosage: '', duration: '', notes: '' });
+  };
+
+  const createTreatmentMutation = useCreateTreatment({
+    encounterId,
+    onSuccess: (message) => showSuccessToast(message),
+    onError: (message) => showErrorToast(message),
+    onSuccessCallback: handleCloseModal,
   });
 
   const handleOpenModal = () => {
     setIsModalOpen(true);
-  };
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-    setFormData({ type: '', description: '', dosage: '', duration: '', notes: '' });
   };
 
   const handleTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
