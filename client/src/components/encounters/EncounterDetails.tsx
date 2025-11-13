@@ -1,31 +1,20 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Button, Loader } from '@/components';
+import { Button } from '@/components';
 import { formatDateTime } from '@/utils';
 import { 
-  FaThermometerHalf, 
-  FaHeartbeat, 
-  FaHeart, 
-  FaLungs,
   FaPills,
   FaHospital,
-  FaComments,
-  FaStar
+  FaComments
 } from 'react-icons/fa';
 import type { IEncounter } from '@/interfaces/encounters/IEncounter';
 import type { IObservation } from '@/interfaces/encounters/IObservation';
-import { getEncounterObservations } from '@/api/encounters';
+import type { IDiagnosis } from '@/interfaces/encounters/IDiagnosis';
+import { getEncounterDiagnoses, getEncounterObservations } from '@/api/encounters';
 
 import { EncounterOverview } from './EncounterOverview';
 import { EncounterObservations } from './EncounterObservations';
-
-// Temporary interfaces for hardcoded data (will be replaced with API calls)
-interface IDiagnosis {
-  id: number;
-  code: string | null;
-  label: string;
-  is_primary: boolean;
-}
+import { EncounterDiagnoses } from './EncounterDiagnoses';
 
 interface ITreatment {
   id: number;
@@ -44,29 +33,20 @@ export const EncounterDetails = ({ encounter }: { encounter: IEncounter }) => {
   const { data: observationsData, isLoading: isLoadingObservations, error: observationsError } = useQuery<{ observations: IObservation[] }>({
     queryKey: ['encounter', encounter.id, 'observations'],
     queryFn: () => getEncounterObservations(encounter.id),
-    enabled: activeTab === 'observations', // Only fetch when observations tab is active
-    staleTime: 30 * 1000, // Consider data fresh for 30 seconds
+    enabled: activeTab === 'observations',
+    staleTime: 30 * 1000,
+  });
+
+  const { data: diagnosesData, isLoading: isLoadingDiagnoses, error: diagnosesError } = useQuery<{ diagnoses: IDiagnosis[] }>({
+    queryKey: ['encounter', encounter.id, 'diagnoses'],
+    queryFn: () => getEncounterDiagnoses(encounter.id),
+    enabled: activeTab === 'diagnoses',
+    staleTime: 30 * 1000,
   });
 
   const observations = observationsData?.observations || [];
+  const diagnoses = diagnosesData?.diagnoses || [];
 
-  // Hardcoded diagnoses
-  const diagnoses: IDiagnosis[] = [
-    {
-      id: 1,
-      code: 'B54',
-      label: 'Malaria, unspecified',
-      is_primary: true,
-    },
-    {
-      id: 2,
-      code: 'D64.9',
-      label: 'Anemia, unspecified',
-      is_primary: false,
-    },
-  ];
-
-  // Hardcoded treatments
   const treatments: ITreatment[] = [
     {
       id: 1,
@@ -229,60 +209,11 @@ export const EncounterDetails = ({ encounter }: { encounter: IEncounter }) => {
 
         {/* Diagnoses Tab */}
         {activeTab === 'diagnoses' && (
-          <div className="space-y-4">
-            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-4">
-              <h3 className="text-base sm:text-lg font-semibold text-gray-900">Diagnoses</h3>
-              <Button
-                type="button"
-                disabled={false}
-                loading={false}
-                onClick={() => {}}
-                className="bg-green-600 text-white px-3 sm:px-4 py-2 text-sm sm:text-base rounded-md hover:bg-green-700 transition-colors font-medium w-full sm:w-auto"
-              >
-                + Add Diagnosis
-              </Button>
-            </div>
-
-            {diagnoses.length === 0 ? (
-              <div className="text-center py-12 bg-gray-50 rounded-lg">
-                <p className="text-gray-500">No diagnoses recorded yet</p>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {diagnoses.map((diagnosis) => (
-                  <div
-                    key={diagnosis.id}
-                    className={`bg-white border rounded-lg p-4 ${
-                      diagnosis.is_primary
-                        ? 'border-yellow-400 bg-yellow-50'
-                        : 'border-gray-200'
-                    }`}
-                  >
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        {diagnosis.is_primary && (
-                          <div className="flex items-center gap-2 mb-2">
-                            <FaStar className="text-yellow-600" />
-                            <span className="text-xs font-semibold text-yellow-700 bg-yellow-100 px-2 py-1 rounded">
-                              PRIMARY DIAGNOSIS
-                            </span>
-                          </div>
-                        )}
-                        <div className="font-semibold text-gray-900 text-base sm:text-lg mb-1 break-words">
-                          {diagnosis.label}
-                        </div>
-                        {diagnosis.code && (
-                          <div className="text-sm text-gray-600">
-                            ICD-10 Code: <span className="font-mono">{diagnosis.code}</span>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
+          <EncounterDiagnoses
+           diagnoses={diagnoses}
+           isLoadingDiagnoses={isLoadingDiagnoses}
+           diagnosesError={diagnosesError as Error | null}
+          />
         )}
 
         {/* Treatments Tab */}
