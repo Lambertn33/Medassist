@@ -1,10 +1,9 @@
 import { useState } from 'react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useParams } from 'react-router';
-import type { ICreateObservation, IObservation } from '@/interfaces/encounters/IObservation';
+import type { IObservation } from '@/interfaces/encounters/IObservation';
 import { formatDateTime } from '@/utils';
 import { Button, Loader, Modal, Input, Select, Toast } from '@/components';
-import { createEncounterObsevation } from '@/api/encounters';
+import { useToast } from '@/hooks/useToast';
+import { useCreateObservation } from '@/hooks/encounters/useCreateObservation';
 import { FaHeart, FaHeartbeat, FaLungs, FaQuestion, FaThermometerHalf } from 'react-icons/fa';
 
 interface IEncounterObservations {
@@ -39,11 +38,7 @@ const getUnitForType = (type: string): string => {
 
 export const EncounterObservations = ({ observations, isLoadingObservations, observationsError, isEncounterConsultationStarted, encounterId }: IEncounterObservations) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [showToast, setShowToast] = useState(false);
-  const [toastMessage, setToastMessage] = useState('');
-  const [toastType, setToastType] = useState<'success' | 'error'>('success');
-  const queryClient = useQueryClient();
-  const { encounterId: encounterIdParam } = useParams();
+  const { showToast, toastMessage, toastType, showSuccessToast, showErrorToast } = useToast();
   
   const [formData, setFormData] = useState({
     type: '',
@@ -51,37 +46,16 @@ export const EncounterObservations = ({ observations, isLoadingObservations, obs
     unit: '',
   });
 
-  // Create observation mutation
-  const createObservationMutation = useMutation({
-    mutationFn: (observation: ICreateObservation) => 
-      createEncounterObsevation(encounterId, observation),
-    onSuccess: async (data) => {
-      await queryClient.invalidateQueries({ queryKey: ['encounter', encounterId, 'observations'] });
-      await queryClient.refetchQueries({ queryKey: ['encounter', encounterId, 'observations'] });
-      
-      if (encounterIdParam) {
-        queryClient.invalidateQueries({ queryKey: ['encounter', encounterIdParam] });
-      }
-      queryClient.invalidateQueries({ queryKey: ['encounters'] });
-      
-      const message = data?.message as string || 'Observation created successfully';
-      setToastMessage(message);
-      setToastType('success');
-      setShowToast(true);
-      setTimeout(() => {
-        setShowToast(false);
-      }, 3000);
-      
-      handleCloseModal();
-    },
-    onError: (error) => {
-      setToastMessage(error.message);
-      setToastType('error');
-      setShowToast(true);
-      setTimeout(() => {
-        setShowToast(false);
-      }, 3000);
-    },
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setFormData({ type: '', value: '', unit: '' });
+  };
+
+  const createObservationMutation = useCreateObservation({
+    encounterId,
+    onSuccess: (message) => showSuccessToast(message),
+    onError: (message) => showErrorToast(message),
+    onSuccessCallback: handleCloseModal,
   });
 
   const getObservationIcon = (type: string) => {
@@ -101,11 +75,6 @@ export const EncounterObservations = ({ observations, isLoadingObservations, obs
 
   const handleOpenModal = () => {
     setIsModalOpen(true);
-  };
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-    setFormData({ type: '', value: '', unit: '' });
   };
 
   const handleTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {

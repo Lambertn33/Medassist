@@ -1,15 +1,17 @@
 import { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Link, useParams } from 'react-router';
+import { useQuery } from '@tanstack/react-query';
+import { Link } from 'react-router';
 import { Button, Toast, Modal, Textarea } from '@/components';
 import { formatDateTime } from '@/utils';
+import { useToast } from '@/hooks/useToast';
+import { useEncounterMutations } from '@/hooks/encounters/useEncounterMutations';
 
 import type { IEncounter } from '@/interfaces/encounters/IEncounter';
 import type { IObservation } from '@/interfaces/encounters/IObservation';
 import type { IDiagnosis } from '@/interfaces/encounters/IDiagnosis';
 import type { ITreatment } from '@/interfaces/encounters/ITreatment';
 
-import { cancelEncounterConsultation, endEncounterConsultation, getEncounterDiagnoses, getEncounterObservations, getEncounterTreatments, startEncounterConsultation } from '@/api/encounters';
+import { getEncounterDiagnoses, getEncounterObservations, getEncounterTreatments } from '@/api/encounters';
 
 import { EncounterOverview } from './EncounterOverview';
 import { EncounterObservations } from './EncounterObservations';
@@ -21,13 +23,14 @@ type TabType = 'overview' | 'observations' | 'diagnoses' | 'treatments';
 
 export const EncounterDetails = ({ encounter }: { encounter: IEncounter }) => {
   const [activeTab, setActiveTab] = useState<TabType>('overview');
-  const [showToast, setShowToast] = useState(false);
-  const [toastMessage, setToastMessage] = useState('');
-  const [toastType, setToastType] = useState<'success' | 'error'>('success');
   const [isEndConsultationModalOpen, setIsEndConsultationModalOpen] = useState(false);
   const [summary, setSummary] = useState('');
-  const queryClient = useQueryClient();
-  const { encounterId } = useParams();
+  const { showToast, toastMessage, toastType, showSuccessToast, showErrorToast } = useToast();
+  
+  const { startConsultationMutation, cancelConsultationMutation, endConsultationMutation } = useEncounterMutations({
+    onSuccess: (message) => showSuccessToast(message),
+    onError: (message) => showErrorToast(message),
+  });
   
   const { data: observationsData, isLoading: isLoadingObservations, error: observationsError } = useQuery<{ observations: IObservation[] }>({
     queryKey: ['encounter', encounter.id, 'observations'],
@@ -50,102 +53,6 @@ export const EncounterDetails = ({ encounter }: { encounter: IEncounter }) => {
     staleTime: 30 * 1000,
   });
 
-
-  const startConsultationMutation = useMutation({
-    mutationFn: (id: number) => startEncounterConsultation(id),
-    onSuccess: async (data) => {
-      // Optimistically update the encounter data immediately
-      if (data?.encounter && encounterId) {
-        queryClient.setQueryData(['encounter', encounterId], { encounter: data.encounter });
-      }
-      
-      await queryClient.invalidateQueries({ queryKey: ['encounter', encounterId] });
-      await queryClient.refetchQueries({ queryKey: ['encounter', encounterId] });
-      queryClient.invalidateQueries({ queryKey: ['encounters'] });
-      
-      const message = data?.message as string || 'Consultation started successfully';
-      setToastMessage(message);
-      setToastType('success');
-      setShowToast(true);
-      setTimeout(() => {
-        setShowToast(false);
-      }, 3000);
-    },
-    onError: (error) => {
-      setToastMessage(error.message);
-      setToastType('error');
-      setShowToast(true);
-      setTimeout(() => {
-        setShowToast(false);
-      }, 3000);
-    },
-  });
-
-  const cancelConsultationMutation = useMutation({
-    mutationFn: (id: number) => cancelEncounterConsultation(id),
-    onSuccess: async (data) => {
-      // Optimistically update the encounter data immediately
-      if (data?.encounter && encounterId) {
-        queryClient.setQueryData(['encounter', encounterId], { encounter: data.encounter });
-      }
-      
-      // Invalidate and refetch queries to ensure data consistency
-      await queryClient.invalidateQueries({ queryKey: ['encounter', encounterId] });
-      await queryClient.refetchQueries({ queryKey: ['encounter', encounterId] });
-      await queryClient.invalidateQueries({ queryKey: ['encounters'] });
-      
-      const message = data?.message as string || 'Consultation canceled successfully';
-      setToastMessage(message);
-      setToastType('success');
-      setShowToast(true);
-      setTimeout(() => {
-        setShowToast(false);
-      }, 3000);
-    },
-    onError: (error) => {
-      setToastMessage(error.message);
-      setToastType('error');
-      setShowToast(true);
-      setTimeout(() => {
-        setShowToast(false);
-      }, 3000);
-    },
-  });
-
-  // End consultation mutation
-  const endConsultationMutation = useMutation({
-    mutationFn: ({ id, summary }: { id: number; summary: string }) => endEncounterConsultation(id, summary),
-    onSuccess: async (data) => {
-      // Optimistically update the encounter data immediately
-      if (data?.encounter && encounterId) {
-        queryClient.setQueryData(['encounter', encounterId], { encounter: data.encounter });
-      }
-      
-      // Invalidate and refetch queries to ensure data consistency
-      await queryClient.invalidateQueries({ queryKey: ['encounter', encounterId] });
-      await queryClient.refetchQueries({ queryKey: ['encounter', encounterId] });
-      queryClient.invalidateQueries({ queryKey: ['encounters'] });
-      
-      const message = data?.message as string || 'Consultation ended successfully';
-      setToastMessage(message);
-      setToastType('success');
-      setShowToast(true);
-      setTimeout(() => {
-        setShowToast(false);
-      }, 3000);
-      
-      handleCloseEndConsultationModal();
-    },
-    onError: (error) => {
-      setToastMessage(error.message);
-      setToastType('error');
-      setShowToast(true);
-      setTimeout(() => {
-        setShowToast(false);
-      }, 3000);
-    },
-  });
-
   const handleStartConsultation = () => {
     startConsultationMutation.mutate(encounter.id);
   }; 
@@ -160,6 +67,8 @@ export const EncounterDetails = ({ encounter }: { encounter: IEncounter }) => {
   const handleCloseEndConsultationModal = () => {
     setIsEndConsultationModalOpen(false);
     setSummary('');
+    // Reset mutation error state when closing modal
+    endConsultationMutation.reset();
   };
 
   const handleSummaryChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -168,7 +77,16 @@ export const EncounterDetails = ({ encounter }: { encounter: IEncounter }) => {
 
   const handleEndConsultation = (e: React.FormEvent) => {
     e.preventDefault();
-    endConsultationMutation.mutate({ id: encounter.id, summary });
+    // Reset any previous errors before submitting
+    endConsultationMutation.reset();
+    endConsultationMutation.mutate(
+      { id: encounter.id, summary },
+      {
+        onSuccess: () => {
+          handleCloseEndConsultationModal();
+        },
+      }
+    );
   };
 
   const observations = observationsData?.observations || [];
@@ -212,7 +130,7 @@ export const EncounterDetails = ({ encounter }: { encounter: IEncounter }) => {
   return (
     <>
       {showToast && (
-        <div className="fixed top-20 right-4 z-50 transition-all duration-300 ease-in-out">
+        <div className="fixed top-20 right-4 z-[100] transition-all duration-300 ease-in-out">
           <Toast
             message={toastMessage}
             type={toastType}

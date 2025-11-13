@@ -1,212 +1,177 @@
 import axios from 'axios';
 import { API_URL } from './constants';
+import { getAuthHeaders, handleAxiosError } from './utils';
 
 import type { ICreateObservation } from '@/interfaces/encounters/IObservation';
 import type { ICreateDiagnosis } from '@/interfaces/encounters/IDiagnosis';
 import type { ICreateTreatment } from '@/interfaces/encounters/ITreatment';
 
 export const getEncounters = async (patientId?: number | null, status?: string | null) => {
-  const token = localStorage.getItem('auth_token');
-  if (!token) {
-    throw new Error('No token found. Please login to access encounters.');
-  }
+  try {
+    const params: { patient_id?: number; status?: string } = {};
+    if (patientId) {
+      params.patient_id = patientId;
+    }
+    if (status) {
+      params.status = status;
+    }
 
-  const params: { patient_id?: number; status?: string } = {};
-  if (patientId) {
-    params.patient_id = patientId;
+    const response = await axios.get(`${API_URL}/common/encounters`, {
+      params,
+      headers: getAuthHeaders(),
+    });
+    return response.data;
+  } catch (error) {
+    handleAxiosError(error, 'Failed to fetch encounters');
   }
-  if (status) {
-    params.status = status;
-  }
-
-  const response = await axios.get(`${API_URL}/common/encounters`, {
-    params,
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-  return response.data;
 };
 
 export const createEncounter = async (patientId: number) => {
-  const token = localStorage.getItem('auth_token');
-  if (!token) {
-    throw new Error('No token found. Please login to create encounters.');
-  }
-
   try {
     const response = await axios.post(
       `${API_URL}/common/encounters`,
       { patient_id: patientId },
       {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
+        headers: getAuthHeaders(),
       }
     );
     return response.data;
   } catch (error) {
-    if (axios.isAxiosError(error) && error.response) {
-      const errorMessage = error.response.data?.message || 'Failed to create encounter';
-      const errors = error.response.data?.errors;
-      throw new Error(errors ? JSON.stringify(errors) : errorMessage);
-    }
-    throw error;
+    handleAxiosError(error, 'Failed to create encounter');
   }
 };  
 
 export const getEncounter = async (id: number) => {
-  const token = localStorage.getItem('auth_token');
-  if (!token) {
-    throw new Error('No token found. Please login to access encounters.');
+  try {
+    const response = await axios.get(`${API_URL}/common/encounters/${id}`, {
+      headers: getAuthHeaders(),
+    });
+    return response.data;
+  } catch (error) {
+    handleAxiosError(error, 'Failed to fetch encounter details');
   }
-
-  const response = await axios.get(`${API_URL}/common/encounters/${id}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-  return response.data;
 };
 
 export const getEncounterObservations = async (id: number) => {
-  const token = localStorage.getItem('auth_token');
-  if (!token) {
-    throw new Error('No token found. Please login to access observations.');
+  try {
+    const response = await axios.get(`${API_URL}/common/encounters/${id}/observations`, {
+      headers: getAuthHeaders(),
+    });
+    return response.data;
+  } catch (error) {
+    handleAxiosError(error, 'Failed to fetch observations');
   }
-
-  const response = await axios.get(`${API_URL}/common/encounters/${id}/observations`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-  return response.data; 
 };
 
 export const createEncounterObsevation = async (id: number, observation: ICreateObservation) => {
-  const token = localStorage.getItem('auth_token');
-  if (!token) {
-    throw new Error('No token found. Please login to create observation.');
+  try {
+    const response = await axios.post(
+      `${API_URL}/common/encounters/${id}/observations`,
+      observation,
+      {
+        headers: getAuthHeaders(),
+      }
+    );
+    return response.data;
+  } catch (error) {
+    handleAxiosError(error, 'Failed to create observation');
   }
-
-  const response = await axios.post(`${API_URL}/common/encounters/${id}/observations`, observation, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    },
-  });
-  return response.data;
 };
 
 export const startEncounterConsultation = async (id: number) => {
-  const token = localStorage.getItem('auth_token');
-  if (!token) {
-    throw new Error('No token found. Please login to start consultation.');
+  try {
+    const response = await axios.put(
+      `${API_URL}/common/encounters/${id}/start-consultation`,
+      {},
+      {
+        headers: getAuthHeaders(),
+      }
+    );
+    return response.data;
+  } catch (error) {
+    handleAxiosError(error, 'Failed to start consultation');
   }
-
-  const response = await axios.put(
-    `${API_URL}/common/encounters/${id}/start-consultation`,
-    {},
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
-    }
-  );
-  return response.data;
 };
 
 
 export const cancelEncounterConsultation = async (id: number) => {
-  const token = localStorage.getItem('auth_token');
-  if (!token) {
-    throw new Error('No token found. Please login to cancel consultation.');
+  try {
+    const response = await axios.put(
+      `${API_URL}/common/encounters/${id}/cancel-consultation`,
+      {},
+      {
+        headers: getAuthHeaders(),
+      }
+    );
+    return response.data;
+  } catch (error) {
+    handleAxiosError(error, 'Failed to cancel consultation');
   }
-
-  const response = await axios.put(
-    `${API_URL}/common/encounters/${id}/cancel-consultation`,
-    {},
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
-    }
-  );
-  return response.data;
 };
 
 export const endEncounterConsultation = async (id: number, summary: string) => {
-  const token = localStorage.getItem('auth_token');
-  if (!token) {
-    throw new Error('No token found. Please login to end consultation.');
+  try {
+    const response = await axios.put(
+      `${API_URL}/common/encounters/${id}/end-consultation`,
+      { summary },
+      {
+        headers: getAuthHeaders(),
+      }
+    );
+    return response.data;
+  } catch (error) {
+    handleAxiosError(error, 'Failed to end consultation');
   }
-
-  const response = await axios.put(`${API_URL}/common/encounters/${id}/end-consultation`, { summary }, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    },
-  });
-  return response.data;
 };
 
 export const getEncounterDiagnoses = async (id: number) => {
-  const token = localStorage.getItem('auth_token');
-  if (!token) {
-    throw new Error('No token found. Please login to access diagnoses.');
+  try {
+    const response = await axios.get(`${API_URL}/common/encounters/${id}/diagnoses`, {
+      headers: getAuthHeaders(),
+    });
+    return response.data;
+  } catch (error) {
+    handleAxiosError(error, 'Failed to fetch diagnoses');
   }
-
-  const response = await axios.get(`${API_URL}/common/encounters/${id}/diagnoses`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-  return response.data; 
 };
 
 export const createEncounterDiagnosis = async (id: number, diagnosis: ICreateDiagnosis) => {
-  const token = localStorage.getItem('auth_token');
-  if (!token) {
-    throw new Error('No token found. Please login to create diagnosis.');
+  try {
+    const response = await axios.post(
+      `${API_URL}/common/encounters/${id}/diagnoses`,
+      diagnosis,
+      {
+        headers: getAuthHeaders(),
+      }
+    );
+    return response.data;
+  } catch (error) {
+    handleAxiosError(error, 'Failed to create diagnosis');
   }
-
-  const response = await axios.post(`${API_URL}/common/encounters/${id}/diagnoses`, diagnosis, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    },
-  });
-  return response.data;
 };
 
 export const getEncounterTreatments = async (id: number) => {
-  const token = localStorage.getItem('auth_token');
-  if (!token) {
-    throw new Error('No token found. Please login to access treatments.');
+  try {
+    const response = await axios.get(`${API_URL}/common/encounters/${id}/treatments`, {
+      headers: getAuthHeaders(),
+    });
+    return response.data;
+  } catch (error) {
+    handleAxiosError(error, 'Failed to fetch treatments');
   }
-
-  const response = await axios.get(`${API_URL}/common/encounters/${id}/treatments`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-  return response.data; 
 };
 
 export const createEncounterTreatment = async (id: number, treatment: ICreateTreatment) => {
-  const token = localStorage.getItem('auth_token');
-  if (!token) {
-    throw new Error('No token found. Please login to create treatment.');
+  try {
+    const response = await axios.post(
+      `${API_URL}/common/encounters/${id}/treatments`,
+      treatment,
+      {
+        headers: getAuthHeaders(),
+      }
+    );
+    return response.data;
+  } catch (error) {
+    handleAxiosError(error, 'Failed to create treatment');
   }
-
-  const response = await axios.post(`${API_URL}/common/encounters/${id}/treatments`, treatment, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    },
-  });
-  return response.data;
 };

@@ -1,9 +1,8 @@
 import { useState } from 'react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useParams } from 'react-router';
-import type { ICreateDiagnosis, IDiagnosis } from '@/interfaces/encounters/IDiagnosis';
+import type { IDiagnosis } from '@/interfaces/encounters/IDiagnosis';
 import { Button, Loader, Modal, Input, Toast } from '@/components';
-import { createEncounterDiagnosis } from '@/api/encounters';
+import { useToast } from '@/hooks/useToast';
+import { useCreateDiagnosis } from '@/hooks/encounters/useCreateDiagnosis';
 import { FaStar } from 'react-icons/fa';
 
 interface IEncounterDiagnoses {
@@ -16,11 +15,7 @@ interface IEncounterDiagnoses {
 
 export const EncounterDiagnoses = ({ diagnoses, isLoadingDiagnoses, diagnosesError, isEncounterConsultationStarted, encounterId }: IEncounterDiagnoses) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [showToast, setShowToast] = useState(false);
-  const [toastMessage, setToastMessage] = useState('');
-  const [toastType, setToastType] = useState<'success' | 'error'>('success');
-  const queryClient = useQueryClient();
-  const { encounterId: encounterIdParam } = useParams();
+  const { showToast, toastMessage, toastType, showSuccessToast, showErrorToast } = useToast();
   
   const [formData, setFormData] = useState({
     label: '',
@@ -28,46 +23,20 @@ export const EncounterDiagnoses = ({ diagnoses, isLoadingDiagnoses, diagnosesErr
     is_primary: false,
   });
 
-  // Create diagnosis mutation
-  const createDiagnosisMutation = useMutation({
-    mutationFn: (diagnosis: ICreateDiagnosis) => 
-      createEncounterDiagnosis(encounterId, diagnosis),
-    onSuccess: async (data) => {
-      await queryClient.invalidateQueries({ queryKey: ['encounter', encounterId, 'diagnoses'] });
-      await queryClient.refetchQueries({ queryKey: ['encounter', encounterId, 'diagnoses'] });
-      
-      if (encounterIdParam) {
-        queryClient.invalidateQueries({ queryKey: ['encounter', encounterIdParam] });
-      }
-      queryClient.invalidateQueries({ queryKey: ['encounters'] });
-      
-      const message = data?.message as string || 'Diagnosis created successfully';
-      setToastMessage(message);
-      setToastType('success');
-      setShowToast(true);
-      setTimeout(() => {
-        setShowToast(false);
-      }, 3000);
-      
-      handleCloseModal();
-    },
-    onError: (error) => {
-      setToastMessage(error.message);
-      setToastType('error');
-      setShowToast(true);
-      setTimeout(() => {
-        setShowToast(false);
-      }, 3000);
-    },
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setFormData({ label: '', code: '', is_primary: false });
+  };
+
+  const createDiagnosisMutation = useCreateDiagnosis({
+    encounterId,
+    onSuccess: (message) => showSuccessToast(message),
+    onError: (message) => showErrorToast(message),
+    onSuccessCallback: handleCloseModal,
   });
 
   const handleOpenModal = () => {
     setIsModalOpen(true);
-  };
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-    setFormData({ label: '', code: '', is_primary: false });
   };
 
   const handleLabelChange = (e: React.ChangeEvent<HTMLInputElement>) => {
