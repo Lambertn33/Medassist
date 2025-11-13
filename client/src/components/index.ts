@@ -30,6 +30,7 @@ import { PatientDetails } from './patients/PatientDetails';
 
 import { EncountersList } from './encounters/EncountersList';
 import { EncountersFilter } from './encounters/EncountersFilter';
+import { EncounterDetails } from './encounters/EncounterDetails';
 
 export { 
     LoginForm,
@@ -54,4 +55,5 @@ export {
     PatientDetailsEncounters, 
     EncountersList,
     EncountersFilter,
+    EncounterDetails,
     Card };
