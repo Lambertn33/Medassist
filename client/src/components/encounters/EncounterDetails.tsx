@@ -138,6 +138,14 @@ export const EncounterDetails = ({ encounter }: { encounter: IEncounter }) => {
         </div>
       )}
       <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+      <div className="mb-3">
+        <Link
+          to="/dashboard/encounters"
+            className="inline-flex items-center text-sm text-gray-600 hover:text-blue-600 transition-colors"
+          >
+            ← Back to All Encounters
+        </Link>
+      </div>
       {/* Header */}
       <div className="bg-gradient-to-r from-blue-50 to-blue-100 px-4 sm:px-6 py-4 sm:py-6 border-b border-gray-200">
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
@@ -145,7 +153,7 @@ export const EncounterDetails = ({ encounter }: { encounter: IEncounter }) => {
             <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 mb-2 break-words">
               Encounter #{encounter.id} - <Link to={`/dashboard/patients/${encounter.patient.id}`} className="text-blue-600 hover:text-blue-700 transition-colors">{encounter.patient.first_name} {encounter.patient.last_name}</Link>
             </h2>
-            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-xs sm:text-sm text-gray-600">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-8 text-xs sm:text-sm text-gray-600">
               <div className="flex items-center gap-2">
                 <span className="font-medium">Status:</span>
                 {getStatusBadge(encounter.status)}
