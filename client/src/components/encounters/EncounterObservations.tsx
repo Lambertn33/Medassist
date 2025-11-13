@@ -1,6 +1,7 @@
+import { useState } from 'react';
 import type { IObservation } from '@/interfaces/encounters/IObservation';
 import { formatDateTime } from '@/utils';
-import { Button, Loader } from '@/components';
+import { Button, Loader, Modal, Input, Select } from '@/components';
 import { FaHeart, FaHeartbeat, FaLungs, FaQuestion, FaThermometerHalf } from 'react-icons/fa';
 
 interface IEncounterObservations {
@@ -10,7 +11,36 @@ interface IEncounterObservations {
   isEncounterConsultationStarted: boolean;
 }
 
+const OBSERVATION_TYPES = [
+  { value: 'TEMPERATURE', label: 'Temperature' },
+  { value: 'BLOOD_PRESSURE', label: 'Blood Pressure' },
+  { value: 'HEART_RATE', label: 'Heart Rate' },
+  { value: 'OXYGEN_SATURATION', label: 'Oxygen Saturation' },
+];
+
+const getUnitForType = (type: string): string => {
+  switch (type) {
+    case 'TEMPERATURE':
+      return '°C';
+    case 'BLOOD_PRESSURE':
+      return 'mmHg';
+    case 'HEART_RATE':
+      return 'bpm';
+    case 'OXYGEN_SATURATION':
+      return '%';
+    default:
+      return '';
+  }
+};
+
 export const EncounterObservations = ({ observations, isLoadingObservations, observationsError, isEncounterConsultationStarted }: IEncounterObservations) => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [formData, setFormData] = useState({
+    type: '',
+    value: '',
+    unit: '',
+  });
+
   const getObservationIcon = (type: string) => {
     switch (type) {
       case 'TEMPERATURE':
@@ -25,24 +55,54 @@ export const EncounterObservations = ({ observations, isLoadingObservations, obs
         return <FaQuestion />;
     }
   };
+
+  const handleOpenModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setFormData({ type: '', value: '', unit: '' });
+  };
+
+  const handleTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedType = e.target.value;
+    setFormData({ 
+      ...formData, 
+      type: selectedType,
+      unit: getUnitForType(selectedType)
+    });
+  };
+
+  const handleValueChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, value: e.target.value });
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log(formData);
+    handleCloseModal();
+  };
+
   return (
-    <div className="space-y-4">
-    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-4">
-      <h3 className="text-base sm:text-lg font-semibold text-gray-900">Vital Signs</h3>
-      {
-        isEncounterConsultationStarted && (
-          <Button
-            type="button"
-            disabled={false}
-            loading={false}
-            onClick={() => {}}
-            className="bg-blue-600 text-white px-3 sm:px-4 py-2 text-sm sm:text-base rounded-md hover:bg-blue-700 transition-colors font-medium w-full sm:w-auto"
-          >
-            + Add Observation
-          </Button>
-        )
-      }
-    </div>
+    <>
+      <div className="space-y-4">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-4">
+          <h3 className="text-base sm:text-lg font-semibold text-gray-900">Vital Signs</h3>
+          {
+            isEncounterConsultationStarted && (
+              <Button
+                type="button"
+                disabled={false}
+                loading={false}
+                onClick={handleOpenModal}
+                className="bg-blue-600 cursor-pointer text-white px-3 sm:px-4 py-2 text-sm sm:text-base rounded-md hover:bg-blue-700 transition-colors font-medium w-full sm:w-auto"
+              >
+                + Add Observation
+              </Button>
+            )
+          }
+        </div>
 
     {isLoadingObservations ? (
       <div className="text-center py-12 bg-gray-50 rounded-lg">
@@ -87,6 +147,88 @@ export const EncounterObservations = ({ observations, isLoadingObservations, obs
         ))}
       </div>
     )}
-  </div>
+      </div>
+
+      {/* Add Observation Modal */}
+      <Modal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        title="Add Observation"
+        modalWidth="max-w-md"
+      >
+        <form onSubmit={handleSubmit}>
+          <div className="p-4 md:p-5 space-y-4">
+            {/* Observation Type */}
+            <Select
+              name="type"
+              id="observation-type"
+              value={formData.type}
+              onChange={handleTypeChange}
+              disabled={false}
+              label="Observation Type"
+              additionalClasses="w-full"
+              options={[
+                { value: '', label: 'Select observation type' },
+                ...OBSERVATION_TYPES,
+              ]}
+            />
+
+            {/* Value Input */}
+            <Input
+              id="observation-value"
+              name="value"
+              type="text"
+              autoComplete="off"
+              required={true}
+              value={formData.value}
+              onChange={handleValueChange}
+              disabled={false}
+              placeholder={formData.type === 'BLOOD_PRESSURE' ? 'e.g., 120/80' : formData.type ? `Enter value` : 'Select type first'}
+              label="Value"
+              additionalClasses="w-full"
+            />
+
+            {/* Unit Display (Read-only) */}
+            {formData.type && (
+             <Input
+                id="observation-unit"
+                name="unit"
+                type="text"
+                autoComplete="off"
+                required={true}
+                value={getUnitForType(formData.type)}
+                onChange={() => {}}
+                disabled={false}
+                placeholder={getUnitForType(formData.type)}
+                label="Unit"
+                additionalClasses="w-full"
+                readOnly={true}
+              />
+            )}
+          </div>
+
+          {/* Modal Footer */}
+          <div className="flex items-center justify-end gap-3 p-4 md:p-5 border-t border-gray-200 rounded-b">
+            <Button
+              type="button"
+              onClick={handleCloseModal}
+              disabled={false}
+              loading={false}
+              className="px-4 py-2 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors font-medium"
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              disabled={!formData.type || !formData.value}
+              loading={false}
+              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors font-medium disabled:bg-gray-300 disabled:cursor-not-allowed"
+            >
+              Add Observation
+            </Button>
+          </div>
+        </form>
+      </Modal>
+    </>
   );
 };
