@@ -3,6 +3,7 @@ import { API_URL } from './constants';
 
 import type { ICreateObservation } from '@/interfaces/encounters/IObservation';
 import type { ICreateDiagnosis } from '@/interfaces/encounters/IDiagnosis';
+import type { ICreateTreatment } from '@/interfaces/encounters/ITreatment';
 
 export const getEncounters = async (patientId?: number | null, status?: string | null) => {
   const token = localStorage.getItem('auth_token');
@@ -178,4 +179,19 @@ export const getEncounterTreatments = async (id: number) => {
     },
   });
   return response.data; 
+};
+
+export const createEncounterTreatment = async (id: number, treatment: ICreateTreatment) => {
+  const token = localStorage.getItem('auth_token');
+  if (!token) {
+    throw new Error('No token found. Please login to create treatment.');
+  }
+
+  const response = await axios.post(`${API_URL}/common/encounters/${id}/treatments`, treatment, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+  });
+  return response.data;
 };

@@ -7,3 +7,11 @@ export interface ITreatment {
   duration?: string;
   notes?: string;
 }
+
+export interface ICreateTreatment {
+  type: 'MEDICATION' | 'PROCEDURE' | 'COUNSELING';
+  description: string;
+  dosage: string;
+  duration: number;
+  notes: string;
+}

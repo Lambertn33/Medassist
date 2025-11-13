@@ -298,6 +298,7 @@ export const EncounterDetails = ({ encounter }: { encounter: IEncounter }) => {
            isLoadingTreatments={isLoadingTreatments}
            treatmentsError={treatmentsError as Error | null}
            isEncounterConsultationStarted={encounter.status === 'IN_PROGRESS'}
+           encounterId={encounter.id}
           />
         )}
       </div>

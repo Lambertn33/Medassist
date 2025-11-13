@@ -10,6 +10,7 @@ import { Input } from './ui/Input';
 import { Loader } from './ui/Loader';
 import { Modal } from './ui/Modal';
 import { Select } from './ui/Select';
+import { Textarea } from './ui/Textarea';
 import { Toast } from './ui/Toast';
 
 import { PatientDetailsInfo } from './patients/PatientDetailsInfo';
@@ -56,4 +57,6 @@ export {
     EncountersList,
     EncountersFilter,
     EncounterDetails,
-    Card };
+    Card,
+    Textarea
+ };
