@@ -2,28 +2,18 @@ import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Button } from '@/components';
 import { formatDateTime } from '@/utils';
-import { 
-  FaPills,
-  FaHospital,
-  FaComments
-} from 'react-icons/fa';
+
 import type { IEncounter } from '@/interfaces/encounters/IEncounter';
 import type { IObservation } from '@/interfaces/encounters/IObservation';
 import type { IDiagnosis } from '@/interfaces/encounters/IDiagnosis';
-import { getEncounterDiagnoses, getEncounterObservations } from '@/api/encounters';
+import type { ITreatment } from '@/interfaces/encounters/ITreatment';
+
+import { getEncounterDiagnoses, getEncounterObservations, getEncounterTreatments } from '@/api/encounters';
 
 import { EncounterOverview } from './EncounterOverview';
 import { EncounterObservations } from './EncounterObservations';
 import { EncounterDiagnoses } from './EncounterDiagnoses';
-
-interface ITreatment {
-  id: number;
-  type: 'MEDICATION' | 'PROCEDURE' | 'COUNSELING';
-  description: string;
-  dosage?: string;
-  duration?: string;
-  notes?: string;
-}
+import { EncounterTreatments } from './EncounterTreatments';
 
 type TabType = 'overview' | 'observations' | 'diagnoses' | 'treatments';
 
@@ -44,31 +34,16 @@ export const EncounterDetails = ({ encounter }: { encounter: IEncounter }) => {
     staleTime: 30 * 1000,
   });
 
+  const { data: treatmentsData, isLoading: isLoadingTreatments, error: treatmentsError } = useQuery<{ treatments: ITreatment[] }>({
+    queryKey: ['encounter', encounter.id, 'treatments'],
+    queryFn: () => getEncounterTreatments(encounter.id),
+    enabled: activeTab === 'treatments',
+    staleTime: 30 * 1000,
+  });
+
   const observations = observationsData?.observations || [];
   const diagnoses = diagnosesData?.diagnoses || [];
-
-  const treatments: ITreatment[] = [
-    {
-      id: 1,
-      type: 'MEDICATION',
-      description: 'Paracetamol 500mg',
-      dosage: '2 tablets, 3x daily',
-      duration: '5 days',
-      notes: 'Take with food',
-    },
-    {
-      id: 2,
-      type: 'PROCEDURE',
-      description: 'Blood test',
-      notes: 'CBC and malaria test',
-    },
-    {
-      id: 3,
-      type: 'COUNSELING',
-      description: 'Rest and hydration',
-      notes: 'Drink plenty of water, avoid strenuous activities',
-    },
-  ];
+  const treatments = treatmentsData?.treatments || [];
 
   const getStatusBadge = (status: string) => {
     const statusColors: Record<string, string> = {
@@ -87,15 +62,6 @@ export const EncounterDetails = ({ encounter }: { encounter: IEncounter }) => {
         {status.replace(/_/g, ' ')}
       </span>
     );
-  };
-
-  const getTreatmentIcon = (type: string) => {
-    const icons: Record<string, React.ReactNode> = {
-      MEDICATION: <FaPills className="text-purple-500" />,
-      PROCEDURE: <FaHospital className="text-blue-500" />,
-      COUNSELING: <FaComments className="text-green-500" />,
-    };
-    return icons[type] || null;
   };
 
   const tabs: { id: TabType; label: string }[] = [
@@ -218,67 +184,11 @@ export const EncounterDetails = ({ encounter }: { encounter: IEncounter }) => {
 
         {/* Treatments Tab */}
         {activeTab === 'treatments' && (
-          <div className="space-y-4">
-            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-4">
-              <h3 className="text-base sm:text-lg font-semibold text-gray-900">Treatments</h3>
-              <Button
-                type="button"
-                disabled={false}
-                loading={false}
-                onClick={() => {}}
-                className="bg-purple-600 text-white px-3 sm:px-4 py-2 text-sm sm:text-base rounded-md hover:bg-purple-700 transition-colors font-medium w-full sm:w-auto"
-              >
-                + Add Treatment
-              </Button>
-            </div>
-
-            {treatments.length === 0 ? (
-              <div className="text-center py-12 bg-gray-50 rounded-lg">
-                <p className="text-gray-500">No treatments prescribed yet</p>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {treatments.map((treatment) => (
-                  <div
-                    key={treatment.id}
-                    className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
-                  >
-                    <div className="flex items-start gap-2 sm:gap-3">
-                      <div className="text-2xl sm:text-3xl flex items-center flex-shrink-0">
-                        {getTreatmentIcon(treatment.type)}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-2">
-                          <span className="text-xs font-semibold text-purple-700 bg-purple-100 px-2 py-1 rounded">
-                            {treatment.type}
-                          </span>
-                        </div>
-                        <div className="font-semibold text-gray-900 text-base sm:text-lg mb-2 break-words">
-                          {treatment.description}
-                        </div>
-                        {treatment.dosage && (
-                          <div className="text-sm text-gray-700 mb-1">
-                            <span className="font-medium">Dosage:</span> {treatment.dosage}
-                          </div>
-                        )}
-                        {treatment.duration && (
-                          <div className="text-sm text-gray-700 mb-1">
-                            <span className="font-medium">Duration:</span>{' '}
-                            {treatment.duration}
-                          </div>
-                        )}
-                        {treatment.notes && (
-                          <div className="text-sm text-gray-600 mt-2 pt-2 border-t border-gray-200">
-                            <span className="font-medium">Notes:</span> {treatment.notes}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
+          <EncounterTreatments
+           treatments={treatments}
+           isLoadingTreatments={isLoadingTreatments}
+           treatmentsError={treatmentsError as Error | null}
+          />
         )}
       </div>
     </div>
