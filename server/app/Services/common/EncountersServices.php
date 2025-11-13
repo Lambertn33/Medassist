@@ -30,7 +30,11 @@ class EncountersServices
 
     public function getEncounter(int $id): ?Encounter
     {
-        return Encounter::with('patient', 'user')->find($id);
+        return Encounter::with('patient', 'user')
+        ->withCount('observations')
+        ->withCount('diagnoses')
+        ->withCount('treatments')
+        ->find($id);
     }
 
     public function startConsultation(int $id): ?Encounter
@@ -56,6 +60,19 @@ class EncountersServices
             'status' => Encounter::STATUS_COMPLETED,
             'ended_at' => now(),
             'summary' => $fields['summary'],
+        ]);
+        return $encounter;
+    }
+
+    public function cancelConsultation(int $id): ?Encounter
+    {
+        $encounter = $this->getEncounter($id);
+        if (! $encounter) {
+            return null;
+        }
+        $encounter->update([
+            'status' => Encounter::STATUS_CANCELED,
+            'ended_at' => now(),
         ]);
         return $encounter;
     }

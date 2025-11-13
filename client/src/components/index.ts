@@ -10,6 +10,7 @@ import { Input } from './ui/Input';
 import { Loader } from './ui/Loader';
 import { Modal } from './ui/Modal';
 import { Select } from './ui/Select';
+import { Textarea } from './ui/Textarea';
 import { Toast } from './ui/Toast';
 
 import { PatientDetailsInfo } from './patients/PatientDetailsInfo';
@@ -27,6 +28,10 @@ import { PatientsList } from './patients/PatientsList';
 import { PatientsSearch } from './patients/PatientsSearch';
 import { PatientForm } from './patients/PatientForm';
 import { PatientDetails } from './patients/PatientDetails';
+
+import { EncountersList } from './encounters/EncountersList';
+import { EncountersFilter } from './encounters/EncountersFilter';
+import { EncounterDetails } from './encounters/EncounterDetails';
 
 export { 
     LoginForm,
@@ -49,4 +54,9 @@ export {
     PatientDetails, 
     PatientDetailsInfo, 
     PatientDetailsEncounters, 
-    Card };
+    EncountersList,
+    EncountersFilter,
+    EncounterDetails,
+    Card,
+    Textarea
+ };

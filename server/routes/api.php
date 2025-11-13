@@ -47,6 +47,7 @@ Route::prefix('common')->middleware('auth:sanctum')->group(function () {
                 Route::get('/', 'show');
                 Route::put('/start-consultation', 'startConsultation');
                 Route::put('/end-consultation', 'endConsultation');
+                Route::put('/cancel-consultation', 'cancelConsultation');
             });
         });
 

@@ -111,9 +111,6 @@ class EncountersController extends Controller
     public function endConsultation(Request $request, int $id)
     {
         try {
-            $fields = $request->validate([
-                'summary' => 'required|string',
-            ]);
             $encounter = $this->encountersServices->getEncounter($id);
             if (! $encounter) {
                 return response()->json([
@@ -129,17 +126,15 @@ class EncountersController extends Controller
             $diagnosisCount = $encounter->diagnoses()->count();
             $observationCount = $encounter->observations()->count();
             
-            if ($diagnosisCount === 0) {
+            if ($diagnosisCount === 0 || $observationCount === 0) {
                 return response()->json([
-                    'message' => 'Cannot end consultation. At least one diagnosis is required.',
+                    'message' => 'Cannot end consultation. At least one diagnosis and one observation are required.',
                 ], 400);
             }
             
-            if ($observationCount === 0) {
-                return response()->json([
-                    'message' => 'Cannot end consultation. At least one observation is required.',
-                ], 400);
-            }
+            $fields = $request->validate([
+                'summary' => 'required|string',
+            ]);
             
             $encounterToUpdate = $this->encountersServices->endConsultation($id, $fields);
             return response()->json([
@@ -156,6 +151,23 @@ class EncountersController extends Controller
         catch (Exception $e) {
             return response()->json([
                 'message' => 'An error occurred while ending consultation.',
+                'error'   => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function cancelConsultation(int $id)
+    {
+        try {
+            $encounter = $this->encountersServices->cancelConsultation($id);
+            return response()->json([
+                'message' => 'Consultation canceled successfully',
+                'encounter' => $encounter,
+            ], 200);
+        }
+        catch (Exception $e) {
+            return response()->json([
+                'message' => 'An error occurred while canceling consultation.',
                 'error'   => $e->getMessage(),
             ], 500);
         }

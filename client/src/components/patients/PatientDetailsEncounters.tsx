@@ -1,7 +1,7 @@
-import type { IEncounter } from "@/interfaces/patients/IPatient";
+import type { IPatientEncounterDetails } from "@/interfaces/patients/IPatient";
 import { formatDateTime } from "@/utils";
 
-export const PatientDetailsEncounters = ({ encounters }: { encounters: IEncounter[] }) => {
+export const PatientDetailsEncounters = ({ encounters }: { encounters: IPatientEncounterDetails[] }) => {
     const getStatusBadge = (status: string) => {
         const statusColors: Record<string, string> = {
           INITIALIZED: 'bg-gray-100 text-gray-800',
