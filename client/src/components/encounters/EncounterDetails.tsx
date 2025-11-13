@@ -194,19 +194,19 @@ export const EncounterDetails = () => {
   return (
     <div className="bg-white rounded-lg shadow-sm overflow-hidden">
       {/* Header */}
-      <div className="bg-gradient-to-r from-blue-50 to-blue-100 px-6 py-6 border-b border-gray-200">
-        <div className="flex justify-between items-start">
-          <div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">
+      <div className="bg-gradient-to-r from-blue-50 to-blue-100 px-4 sm:px-6 py-4 sm:py-6 border-b border-gray-200">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
+          <div className="flex-1 min-w-0">
+            <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 mb-2 break-words">
               Encounter #{encounter.id} - {encounter.patient.first_name}{' '}
               {encounter.patient.last_name}
             </h2>
-            <div className="flex items-center gap-4 text-sm text-gray-600">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-xs sm:text-sm text-gray-600">
               <div className="flex items-center gap-2">
                 <span className="font-medium">Status:</span>
                 {getStatusBadge(encounter.status)}
               </div>
-              <div>
+              <div className="truncate">
                 <span className="font-medium">Provider:</span> {encounter.user.name}
               </div>
               <div>
@@ -219,13 +219,13 @@ export const EncounterDetails = () => {
             </div>
           </div>
           {encounter.status === 'IN_PROGRESS' && (
-            <div className="flex gap-2">
+            <div className="flex gap-2 sm:flex-shrink-0">
               <Button
                 type="button"
                 disabled={false}
                 loading={false}
                 onClick={() => {}}
-                className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors font-medium"
+                className="bg-green-600 text-white px-3 sm:px-4 py-2 text-sm sm:text-base rounded-md hover:bg-green-700 transition-colors font-medium w-full sm:w-auto"
               >
                 End Consultation
               </Button>
@@ -235,14 +235,14 @@ export const EncounterDetails = () => {
       </div>
 
       {/* Tabs */}
-      <div className="border-b border-gray-200">
-        <nav className="flex -mb-px">
+      <div className="border-b border-gray-200 overflow-x-auto">
+        <nav className="flex -mb-px min-w-max sm:min-w-0">
           {tabs.map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={`
-                px-6 py-4 text-sm font-medium border-b-2 transition-colors
+                px-3 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm font-medium border-b-2 transition-colors whitespace-nowrap
                 ${
                   activeTab === tab.id
                     ? 'border-blue-600 text-blue-600'
@@ -257,7 +257,7 @@ export const EncounterDetails = () => {
       </div>
 
       {/* Tab Content */}
-      <div className="p-6">
+      <div className="p-4 sm:p-6">
         {/* Overview Tab */}
         {activeTab === 'overview' && (
           <div className="space-y-6">
@@ -283,25 +283,25 @@ export const EncounterDetails = () => {
             </div>
 
             <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-3">
+              <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3">
                 Latest Vital Signs
               </h3>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
                 {observations.map((obs) => (
                     <div
                       key={obs.id}
-                      className="bg-gray-50 rounded-lg p-4 border border-gray-200"
+                      className="bg-gray-50 rounded-lg p-3 sm:p-4 border border-gray-200"
                     >
-                    <div className="text-2xl mb-2 flex items-center justify-center">
+                    <div className="text-xl sm:text-2xl mb-2 flex items-center justify-center">
                       {getObservationIcon(obs.type)}
                     </div>
-                    <div className="text-xs text-gray-600 mb-1">
+                    <div className="text-xs text-gray-600 mb-1 truncate">
                       {obs.type.replace(/_/g, ' ')}
                     </div>
-                    <div className="text-lg font-bold text-gray-900">
+                    <div className="text-base sm:text-lg font-bold text-gray-900">
                       {obs.value} {obs.unit}
                     </div>
-                    <div className="text-xs text-gray-500 mt-1">
+                    <div className="text-xs text-gray-500 mt-1 truncate">
                       {formatDateTime(obs.recorded_at)}
                     </div>
                   </div>
@@ -311,7 +311,7 @@ export const EncounterDetails = () => {
 
             {diagnoses.length > 0 && (
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-3">
+                <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3">
                   Primary Diagnosis
                 </h3>
                 {diagnoses
@@ -339,7 +339,7 @@ export const EncounterDetails = () => {
 
             {encounter.summary && (
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-3">
+                <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3">
                   Summary
                 </h3>
                 <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
@@ -353,14 +353,14 @@ export const EncounterDetails = () => {
         {/* Observations Tab */}
         {activeTab === 'observations' && (
           <div className="space-y-4">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">Vital Signs</h3>
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-4">
+              <h3 className="text-base sm:text-lg font-semibold text-gray-900">Vital Signs</h3>
               <Button
                 type="button"
                 disabled={false}
                 loading={false}
                 onClick={() => {}}
-                className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors font-medium"
+                className="bg-blue-600 text-white px-3 sm:px-4 py-2 text-sm sm:text-base rounded-md hover:bg-blue-700 transition-colors font-medium w-full sm:w-auto"
               >
                 + Add Observation
               </Button>
@@ -378,18 +378,18 @@ export const EncounterDetails = () => {
                     className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
                   >
                     <div className="flex items-start justify-between">
-                      <div className="flex items-start gap-3">
-                        <div className="text-3xl flex items-center">
+                      <div className="flex items-start gap-2 sm:gap-3 flex-1 min-w-0">
+                        <div className="text-2xl sm:text-3xl flex items-center flex-shrink-0">
                           {getObservationIcon(obs.type)}
                         </div>
-                        <div>
-                          <div className="font-semibold text-gray-900">
+                        <div className="min-w-0 flex-1">
+                          <div className="font-semibold text-gray-900 text-sm sm:text-base">
                             {obs.type.replace(/_/g, ' ')}
                           </div>
-                          <div className="text-2xl font-bold text-blue-600 mt-1">
+                          <div className="text-xl sm:text-2xl font-bold text-blue-600 mt-1">
                             {obs.value} {obs.unit}
                           </div>
-                          <div className="text-sm text-gray-500 mt-1">
+                          <div className="text-xs sm:text-sm text-gray-500 mt-1">
                             Recorded: {formatDateTime(obs.recorded_at)}
                           </div>
                         </div>
@@ -405,14 +405,14 @@ export const EncounterDetails = () => {
         {/* Diagnoses Tab */}
         {activeTab === 'diagnoses' && (
           <div className="space-y-4">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">Diagnoses</h3>
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-4">
+              <h3 className="text-base sm:text-lg font-semibold text-gray-900">Diagnoses</h3>
               <Button
                 type="button"
                 disabled={false}
                 loading={false}
                 onClick={() => {}}
-                className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors font-medium"
+                className="bg-green-600 text-white px-3 sm:px-4 py-2 text-sm sm:text-base rounded-md hover:bg-green-700 transition-colors font-medium w-full sm:w-auto"
               >
                 + Add Diagnosis
               </Button>
@@ -443,7 +443,7 @@ export const EncounterDetails = () => {
                             </span>
                           </div>
                         )}
-                        <div className="font-semibold text-gray-900 text-lg mb-1">
+                        <div className="font-semibold text-gray-900 text-base sm:text-lg mb-1 break-words">
                           {diagnosis.label}
                         </div>
                         {diagnosis.code && (
@@ -463,14 +463,14 @@ export const EncounterDetails = () => {
         {/* Treatments Tab */}
         {activeTab === 'treatments' && (
           <div className="space-y-4">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">Treatments</h3>
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-4">
+              <h3 className="text-base sm:text-lg font-semibold text-gray-900">Treatments</h3>
               <Button
                 type="button"
                 disabled={false}
                 loading={false}
                 onClick={() => {}}
-                className="bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700 transition-colors font-medium"
+                className="bg-purple-600 text-white px-3 sm:px-4 py-2 text-sm sm:text-base rounded-md hover:bg-purple-700 transition-colors font-medium w-full sm:w-auto"
               >
                 + Add Treatment
               </Button>
@@ -487,17 +487,17 @@ export const EncounterDetails = () => {
                     key={treatment.id}
                     className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
                   >
-                    <div className="flex items-start gap-3">
-                      <div className="text-3xl flex items-center">
+                    <div className="flex items-start gap-2 sm:gap-3">
+                      <div className="text-2xl sm:text-3xl flex items-center flex-shrink-0">
                         {getTreatmentIcon(treatment.type)}
                       </div>
-                      <div className="flex-1">
+                      <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-2">
                           <span className="text-xs font-semibold text-purple-700 bg-purple-100 px-2 py-1 rounded">
                             {treatment.type}
                           </span>
                         </div>
-                        <div className="font-semibold text-gray-900 text-lg mb-2">
+                        <div className="font-semibold text-gray-900 text-base sm:text-lg mb-2 break-words">
                           {treatment.description}
                         </div>
                         {treatment.dosage && (
