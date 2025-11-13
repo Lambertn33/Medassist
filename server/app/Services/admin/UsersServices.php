@@ -11,7 +11,7 @@ class UsersServices
     public function getAllUsers(?string $search = null)
     {
         $query = User::query()
-            ->select('id', 'name', 'email', 'role', 'last_login_at');
+            ->select('id', 'name', 'email', 'role', 'last_login_at', 'account_status');
 
         if ($search) {
             $query->where(function ($q) use ($search) {
@@ -20,7 +20,7 @@ class UsersServices
             });
         }
 
-        return $query->get();
+        return $query->withCount('encounters')->get();
     }
 
     public function createUser(array $fields): User
@@ -30,7 +30,24 @@ class UsersServices
 
     public function viewUser(int $id): ?User
     {
-        return User::select('id', 'name', 'email', 'role', 'last_login_at')
+        return User::select('id', 'name', 'email', 'role', 'last_login_at', 'account_status')
             ->find($id);
+    }
+
+    public function activateOrCloseAccount(User $user): User
+    {
+        if ($user->account_status === User::ACTIVE_STATUS) {   
+            $user->update([
+                'account_status' => User::CLOSED_STATUS,
+            ]);
+        } else {
+            $user->update([
+                'account_status' => User::ACTIVE_STATUS,
+            ]);
+        }
+        
+        $user->tokens()->delete();
+        
+        return $user;
     }
 }

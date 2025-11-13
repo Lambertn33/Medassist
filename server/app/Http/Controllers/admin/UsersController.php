@@ -77,5 +77,28 @@ class UsersController extends Controller
             ], 500);
         }
     }
+
+    public function updateAccountStatus(int $id)
+    {
+        try {
+            $user = $this->usersServices->viewUser($id);
+            if (! $user) {
+                return response()->json([
+                    'message' => 'User not found',
+                ], 404);
+            }
+            $user = $this->usersServices->activateOrCloseAccount($user);
+
+            return response()->json([
+                'message' => 'User account status updated successfully',
+                'user'    => $user,
+            ], 200);
+        } catch (Exception $e) {
+            return response()->json([   
+                'message' => 'An error occurred while updating the user account status.',
+                'error'   => $e->getMessage(),
+            ], 500);
+        }
+    }
     
 }

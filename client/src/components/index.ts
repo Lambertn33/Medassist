@@ -20,18 +20,22 @@ import { Card } from './dashboard/Card';
 
 import { ProtectedRoute } from './auth/ProtectedRoute';
 import { PublicRoute } from './auth/PublicRoute';
+import { AdminRoute } from './auth/AdminRoute';
 
 import { TotalsOverview } from './dashboard/TotalsOverview';
 import { LatestEncounters } from './dashboard/LatestEncounters'  ;
 
 import { PatientsList } from './patients/PatientsList';
-import { PatientsSearch } from './patients/PatientsSearch';
+import { TableSearch } from './ui/TableSearch';
 import { PatientForm } from './patients/PatientForm';
 import { PatientDetails } from './patients/PatientDetails';
 
 import { EncountersList } from './encounters/EncountersList';
 import { EncountersFilter } from './encounters/EncountersFilter';
 import { EncounterDetails } from './encounters/EncounterDetails';
+
+import { UsersList } from './users/UsersList';
+import { UserForm } from './users/UserForm';
 
 export { 
     LoginForm,
@@ -43,12 +47,13 @@ export {
     Navbar, 
     HomeCard, 
     ProtectedRoute, 
-    PublicRoute, 
+    PublicRoute,
+    AdminRoute, 
     Loader, 
     TotalsOverview, 
     LatestEncounters, 
     PatientsList, 
-    PatientsSearch, 
+    TableSearch, 
     PatientForm, 
     Toast, 
     PatientDetails, 
@@ -57,6 +62,8 @@ export {
     EncountersList,
     EncountersFilter,
     EncounterDetails,
+    UsersList,
+    UserForm,
     Card,
     Textarea
- };
+};

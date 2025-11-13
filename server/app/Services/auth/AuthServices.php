@@ -15,6 +15,10 @@ class AuthServices
             return response()->json(['message' => 'Invalid credentials'], 401);
         }
 
+        if ($user->account_status === User::CLOSED_STATUS) {
+            return response()->json(['message' => 'Your account is closed. Please contact the administrator.'], 401);
+        }
+
         $token = $user->createToken($user->name)->plainTextToken;
         $user->update([
             'last_login_at' => now(),

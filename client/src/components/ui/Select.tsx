@@ -8,9 +8,10 @@ interface SelectProps {
   additionalClasses: string;
   options: { value: string; label: string }[];
   error?: string;
+  required?: boolean;
 }
 
-export const Select = ({ name, id, value, onChange, disabled, label, additionalClasses, options, error }: SelectProps) => {
+export const Select = ({ name, id, value, onChange, disabled, label, additionalClasses, options, error, required = false }: SelectProps) => {
   return (
     <div>
       <label htmlFor={id} className="block text-sm font-medium text-gray-700 mb-2">
@@ -27,6 +28,7 @@ export const Select = ({ name, id, value, onChange, disabled, label, additionalC
         value={value}
         onChange={onChange}
         disabled={disabled}
+        required={required}
       >
         {options.map((option: { value: string; label: string }) => (
           <option key={option.value} value={option.value}>

@@ -1,7 +1,8 @@
 import { Link } from 'react-router';
 import type { IPatientBase } from '@/interfaces/patients/IPatient';
-import { PatientsSearch, Loader, Button } from '@/components';
+import { TableSearch, Loader, Button } from '@/components';
 import { formatDate } from '@/utils';
+import { useAuth } from '@/hooks/useAuth';
 
 interface PatientsListProps {
   patients: IPatientBase[];
@@ -22,12 +23,14 @@ export const PatientsList = ({
   onDelete,
   isDeleting = false
 }: PatientsListProps) => {
+  const { user } = useAuth();
+  const isAdmin = user?.role === 'ADMIN';
 
   return (
     <div className="bg-white rounded-lg shadow-sm overflow-hidden">
       <div className="overflow-x-auto">
         <div className="my-4 mx-6 flex justify-end">
-          <PatientsSearch value={searchValue} onChange={onSearchChange} />
+          <TableSearch value={searchValue} onChange={onSearchChange} />
         </div>
         <table className="w-full text-sm text-left text-gray-500">
           <thead className="text-xs text-gray-700 uppercase bg-gray-50 border-b border-gray-200">
@@ -96,15 +99,17 @@ export const PatientsList = ({
                     >
                       View
                     </Link>
-                    <Button
-                      disabled={isDeleting}
-                      type="button"
-                      loading={isDeleting}
-                      onClick={() => onDelete?.(patient.id)}
-                      className={`inline-block px-4 py-2 cursor-pointer ${isDeleting ? 'bg-red-200' : 'bg-red-600'} text-white rounded-md hover:bg-red-700 transition-colors font-medium`}
-                    >
-                      {isDeleting ? 'Deleting...' : 'Delete'}
-                    </Button>
+                    {isAdmin && (
+                      <Button
+                        disabled={isDeleting}
+                        type="button"
+                        loading={isDeleting}
+                        onClick={() => onDelete?.(patient.id)}
+                        className={`inline-block px-4 py-2 cursor-pointer ${isDeleting ? 'bg-red-200' : 'bg-red-600'} text-white rounded-md hover:bg-red-700 transition-colors font-medium`}
+                      >
+                        {isDeleting ? 'Deleting...' : 'Delete'}
+                      </Button>
+                    )}
                   </td>
                 </tr>
               ))

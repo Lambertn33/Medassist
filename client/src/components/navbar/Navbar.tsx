@@ -55,6 +55,9 @@ export const Navbar = () => {
                 <NavLink to="/dashboard">Dashboard</NavLink>
                 <NavLink to="/dashboard/patients">Patients</NavLink>
                 <NavLink to="/dashboard/encounters">Encounters</NavLink>
+                {user?.role === 'ADMIN' && (
+                  <NavLink to="/dashboard/users">Users</NavLink>
+                )}
                 {user && (
                   <div className="relative" ref={dropdownRef}>
                     <button

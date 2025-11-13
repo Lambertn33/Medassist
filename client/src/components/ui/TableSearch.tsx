@@ -1,16 +1,16 @@
 import { Input } from "@/components";
 
-interface PatientsSearchProps {
+interface TableSearchProps {
     value: string;
     onChange: (value: string) => void;
 }
 
-export const PatientsSearch = ({ value, onChange }: PatientsSearchProps) => {
+export const TableSearch = ({ value, onChange }: TableSearchProps) => {
     return (
         <div className="w-full md:w-1/2 lg:w-1/4">
             <Input 
                 type="text" 
-                placeholder="Search patients by name" 
+                placeholder="Search by name" 
                 name="search"
                 autoComplete="off"
                 required={false}

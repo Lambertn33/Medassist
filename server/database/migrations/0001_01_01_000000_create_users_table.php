@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('password');
             $table->rememberToken();
             $table->timestamp('last_login_at')->nullable();
+            $table->enum('account_status', User::ACCOUNT_STATUS)->default(User::ACTIVE_STATUS);
             $table->timestamps();
         });
 
