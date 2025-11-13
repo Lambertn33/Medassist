@@ -1,5 +1,6 @@
 import type { IPatientEncounterDetails } from "@/interfaces/patients/IPatient";
 import { formatDateTime } from "@/utils";
+import { Link } from "react-router";
 
 export const PatientDetailsEncounters = ({ encounters }: { encounters: IPatientEncounterDetails[] }) => {
     const getStatusBadge = (status: string) => {
@@ -20,14 +21,12 @@ export const PatientDetailsEncounters = ({ encounters }: { encounters: IPatientE
           </span>
         );
       };
+
     return (
         <div className="overflow-x-auto">
         <table className="w-full text-sm text-left text-gray-500">
           <thead className="text-xs text-gray-700 uppercase bg-gray-50 border-b border-gray-200">
             <tr>
-              <th scope="col" className="px-6 py-4 font-semibold">
-                Healthcare Provider
-              </th>
               <th scope="col" className="px-6 py-4 font-semibold">
                 Status
               </th>
@@ -40,17 +39,17 @@ export const PatientDetailsEncounters = ({ encounters }: { encounters: IPatientE
               <th scope="col" className="px-6 py-4 font-semibold">
                 Summary
               </th>
+              <th scope="col" className="px-6 py-4 font-semibold">
+               
+              </th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
             {encounters.map((encounter) => (
               <tr
                 key={encounter.id}
-                className="bg-white hover:bg-blue-50 transition-colors"
+                className="bg-white hover:bg-blue-50 transition-colors cursor-pointer"
               >
-                <td className="px-6 py-4 text-gray-700">
-                  {encounter.user?.name || 'N/A'}
-                </td>
                 <td className="px-6 py-4">{getStatusBadge(encounter.status)}</td>
                 <td className="px-6 py-4 text-gray-700">
                   {formatDateTime(encounter.started_at)}
@@ -62,6 +61,9 @@ export const PatientDetailsEncounters = ({ encounters }: { encounters: IPatientE
                   {encounter.summary || (
                     <span className="text-gray-400 italic">No summary</span>
                   )}
+                </td>
+                <td className="px-6 py-4">
+                  <Link to={`/dashboard/encounters/${encounter.id}`} className="text-blue-600 hover:text-blue-700 transition-colors">View More</Link>
                 </td>
               </tr>
             ))}
