@@ -26,6 +26,7 @@ Route::prefix('admin')->middleware('auth:sanctum', 'can:admin')->group(function 
         Route::get('/', 'index');
         Route::post('/', 'store');
         Route::get('/{id}', 'show');
+        Route::put('/{id}/change-account-status', 'updateAccountStatus');
     });
 });
 

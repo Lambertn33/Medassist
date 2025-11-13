@@ -1,5 +1,5 @@
 import type { IUser } from '@/interfaces/users/IUser';
-import { TableSearch, Loader } from '@/components';
+import { TableSearch, Loader, Button } from '@/components';
 import { formatDateTime } from '@/utils';
 
 interface UsersListProps {
@@ -8,6 +8,7 @@ interface UsersListProps {
   onSearchChange: (value: string) => void;
   isLoading?: boolean;
   error?: Error | null;
+  onUpdateAccountStatus: (id: number) => void;
 }
 
 const getRoleBadgeColor = (role: string) => {
@@ -36,7 +37,8 @@ export const UsersList = ({
   searchValue, 
   onSearchChange, 
   isLoading = false,
-  error
+  error,
+  onUpdateAccountStatus
 }: UsersListProps) => {
 
   return (
@@ -66,6 +68,7 @@ export const UsersList = ({
               <th scope="col" className="px-6 py-4 font-semibold">
                 Number of Encounters
               </th>
+              <th scope="col" className="px-6 py-4 font-semibold">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
@@ -117,6 +120,21 @@ export const UsersList = ({
                   </td>
                   <td className="px-6 py-4 text-gray-700">
                     {user.encounters_count}
+                  </td>
+                  <td className="px-6 py-4 text-gray-700">
+                    {
+                      user.role === 'ADMIN' ? null : (
+                        <Button 
+                          disabled={false}
+                          type="button"
+                          loading={false}
+                          onClick={() => onUpdateAccountStatus(user.id)}
+                          className={`px-4 py-2 rounded-sm text-xs ${user.account_status === 'ACTIVE' ? 'bg-red-600 hover:bg-red-700' : 'bg-blue-600 hover:bg-blue-700'} text-white transition-colors font-medium`}
+                        >
+                          {user.account_status === 'ACTIVE' ? 'Close Account' : 'Open Account'}
+                        </Button>
+                      )
+                    }
                   </td>
                 </tr>
               ))

@@ -24,15 +24,11 @@ export const createUser = async (user: ICreateUser) => {
     });
     return response.data;
   } catch (error) {
-    // For axios errors, preserve the error with status code for status checking
-    // but format validation errors for the form to parse
     if (axios.isAxiosError(error) && error.response) {
-      // Create an error that preserves both status and formatted message
       const formattedError = new Error() as Error & { response?: { status: number } };
       formattedError.response = { status: error.response.status };
       
       if (error.response.status === 422) {
-        // Format validation errors as JSON string for form parsing
         const errors = error.response.data?.errors;
         formattedError.message = errors ? JSON.stringify(errors) : (error.response.data?.message || 'Validation failed');
       } else {
@@ -42,5 +38,20 @@ export const createUser = async (user: ICreateUser) => {
       throw formattedError;
     }
     handleAxiosError(error, 'Failed to create user');
+  }
+};
+
+export const updateAccountStatus = async (id: number) => {
+  try {
+    const response = await axios.put(
+      `${API_URL}/admin/users/${id}/change-account-status`,
+      {},
+      {
+        headers: getAuthHeaders(),
+      }
+    );
+    return response.data;
+  } catch (error) {
+    handleAxiosError(error, 'Failed to update user account status');
   }
 };

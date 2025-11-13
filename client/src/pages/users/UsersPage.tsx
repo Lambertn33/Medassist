@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
-import { getUsers, createUser } from '@/api/users';
+import { getUsers, createUser, updateAccountStatus } from '@/api/users';
 import type { IUser, ICreateUser } from '@/interfaces/users/IUser';
 import { UsersList, UserForm, Button, Toast } from '@/components';
 
@@ -21,17 +21,14 @@ export const UsersPage = () => {
         return () => clearTimeout(timer);
     }, [inputValue]);
 
-    // Get users list
     const { data, isLoading, error } = useQuery<{ users: IUser[] }>({
         queryKey: ['users', searchTerm],
         queryFn: () => getUsers(searchTerm || null),
     });
 
-    // Create user mutation
     const createUserMutation = useMutation({
         mutationFn: createUser,
         onSuccess: (data) => {
-            // Invalidate and refetch users list
             queryClient.invalidateQueries({ queryKey: ['users'] });
             setIsModalOpen(false);
 
@@ -59,9 +56,34 @@ export const UsersPage = () => {
         },
     });
 
+
+    const updateAccountStatusMutation = useMutation({
+        mutationFn: (id: number) => updateAccountStatus(id),
+        onSuccess: (data) => {
+            queryClient.invalidateQueries({ queryKey: ['users'] });
+            setToastMessage(data?.message as string);
+            setShowToast(true);
+            setTimeout(() => {
+                setShowToast(false);
+            }, 3000);
+        },
+        onError: (error: unknown) => {
+            const errorMessage = error instanceof Error ? error.message : 'An error occurred';
+            setToastMessage(errorMessage);
+            setShowToast(true);
+            setTimeout(() => {
+                setShowToast(false);
+            }, 3000);
+        },
+    });
+
     // Handle form submission
-    const handleSubmit = (formData: ICreateUser) => {
+    const handleCreateUser = (formData: ICreateUser) => {
         createUserMutation.mutate(formData);
+    };
+
+    const handleUpdateAccountStatus = (id: number) => {
+        updateAccountStatusMutation.mutate(id);
     };
 
     // Handle modal close - reset errors
@@ -98,11 +120,12 @@ export const UsersPage = () => {
                 onSearchChange={setInputValue}
                 isLoading={isLoading}
                 error={error}
+                onUpdateAccountStatus={handleUpdateAccountStatus}
             />
             <UserForm
                 isOpen={isModalOpen}
                 onClose={handleClose}
-                onSubmit={handleSubmit}
+                onSubmit={handleCreateUser}
                 error={createUserMutation.error as Error | null}
                 isLoading={createUserMutation.isPending}
             />

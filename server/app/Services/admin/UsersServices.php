@@ -33,4 +33,18 @@ class UsersServices
         return User::select('id', 'name', 'email', 'role', 'last_login_at', 'account_status')
             ->find($id);
     }
+
+    public function activateOrCloseAccount(User $user): User
+    {
+        if ($user->account_status === User::ACTIVE_STATUS) {   
+            $user->update([
+                'account_status' => User::CLOSED_STATUS,
+            ]);
+        } else {
+            $user->update([
+                'account_status' => User::ACTIVE_STATUS,
+            ]);
+        }
+        return $user;
+    }
 }
