@@ -5,3 +5,9 @@ export interface IDiagnosis {
   label: string;
   is_primary: boolean;
 }
+
+export interface ICreateDiagnosis {
+  code: string | null;
+  label: string;
+  is_primary: boolean;
+}

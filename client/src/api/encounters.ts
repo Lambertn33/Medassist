@@ -1,6 +1,8 @@
 import axios from 'axios';
 import { API_URL } from './constants';
+
 import type { ICreateObservation } from '@/interfaces/encounters/IObservation';
+import type { ICreateDiagnosis } from '@/interfaces/encounters/IDiagnosis';
 
 export const getEncounters = async (patientId?: number | null, status?: string | null) => {
   const token = localStorage.getItem('auth_token');
@@ -147,6 +149,21 @@ export const getEncounterDiagnoses = async (id: number) => {
     },
   });
   return response.data; 
+};
+
+export const createEncounterDiagnosis = async (id: number, diagnosis: ICreateDiagnosis) => {
+  const token = localStorage.getItem('auth_token');
+  if (!token) {
+    throw new Error('No token found. Please login to create diagnosis.');
+  }
+
+  const response = await axios.post(`${API_URL}/common/encounters/${id}/diagnoses`, diagnosis, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+  });
+  return response.data;
 };
 
 export const getEncounterTreatments = async (id: number) => {
