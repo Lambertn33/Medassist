@@ -280,7 +280,7 @@ export const EncounterDetails = ({ encounter }: { encounter: IEncounter }) => {
             </div>
           )}
           {encounter.status === 'COMPLETED' && (
-           <div className="flex gap-2 sm:flex-shrink-0">
+           <div className="flex gap-2 sm:flex-shrink-0 items-center">
             <span className="text-green-600 text-sm sm:text-base">Consultation completed</span>
             <FaCheckCircle className="text-green-600 text-sm sm:text-base" />
            </div>
