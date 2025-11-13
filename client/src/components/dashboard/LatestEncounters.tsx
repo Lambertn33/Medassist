@@ -1,22 +1,8 @@
+import { formatDate } from '@/utils';
+import type { ILatestEncounter } from '@/interfaces/dashboard/IDashboardData';
+
 interface LatestEncountersProps {
-  data?: {
-    id: number;
-    patient_id: number;
-    user_id: number;
-    status: string;
-    started_at: string;
-    ended_at: string;
-    summary: string;
-    patient: {
-      id: number;
-      first_name: string;
-      last_name: string;
-    };
-    user: {
-      id: number;
-      name: string;
-    };
-  }[];
+  data?: ILatestEncounter[];
 }
 
 export const LatestEncounters = ({ data }: LatestEncountersProps) => {
@@ -39,16 +25,6 @@ export const LatestEncounters = ({ data }: LatestEncountersProps) => {
         {status.replace(/_/g, ' ')}
       </span>
     );
-  };
-
-  const formatDate = (dateString: string | null) => {
-    if (!dateString) return 'N/A';
-    return new Date(dateString).toLocaleString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
   };
 
   if (encounters.length === 0) {

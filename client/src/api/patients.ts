@@ -1,15 +1,121 @@
 import axios from 'axios';
 import { API_URL } from './constants';
+import type { IPatientFormData } from '@/interfaces/patients/IPatient';
 
 export const getPatients = async (search: string | null = null) => {
   const token = localStorage.getItem('auth_token');
   if (!token) {
     throw new Error('No token found. Please login to access patients.');
   }
-  const response = await axios.get(`${API_URL}/common/patients${search ? `?search=${search}` : ''}`, {
+  
+  const params = search ? { search } : {};
+  
+  const response = await axios.get(`${API_URL}/common/patients`, {
+    params,
     headers: {
       Authorization: `Bearer ${token}`,
     },
   });
   return response.data;
+};
+
+export const getPatient = async (id: number) => {
+  const token = localStorage.getItem('auth_token');
+  if (!token) {
+    throw new Error('No token found. Please login to access patient details.');
+  }
+
+  try {
+    const response = await axios.get(`${API_URL}/common/patients/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response) {
+      const message = error.response.data?.message || 'Failed to fetch patient details';
+      throw new Error(message);
+    }
+    throw error;
+  }
+};
+
+export const createPatient = async (patientData: IPatientFormData) => {
+  const token = localStorage.getItem('auth_token');
+  if (!token) {
+    throw new Error('No token found. Please login to create patients.');
+  }
+
+  try {
+    const response = await axios.post(
+      `${API_URL}/common/patients`,
+      patientData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response) {
+      // Extract error message from backend response
+      const errorMessage = error.response.data?.message || 'Failed to create patient';
+      const errors = error.response.data?.errors;
+      throw new Error(errors ? JSON.stringify(errors) : errorMessage);
+    }
+    throw error;
+  }
+};
+
+export const updatePatient = async (id: number, patientData: IPatientFormData) => {
+  const token = localStorage.getItem('auth_token');
+  if (!token) {
+    throw new Error('No token found. Please login to update patients.');
+  }
+
+  try {
+    const response = await axios.put(
+      `${API_URL}/common/patients/${id}`,
+      patientData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response) {
+      const errorMessage = error.response.data?.message || 'Failed to update patient';
+      const errors = error.response.data?.errors;
+      throw new Error(errors ? JSON.stringify(errors) : errorMessage);
+    }
+    throw error;
+  }
+};
+
+export const deletePatient = async (id: number) => {
+  const token = localStorage.getItem('auth_token');
+  if (!token) {
+    throw new Error('No token found. Please login to delete patients.');
+  }
+
+  try {
+    const response = await axios.delete(`${API_URL}/common/patients/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response) {
+      const message = error.response.data?.message || 'Failed to delete patient';
+      throw new Error(message);
+        }
+        throw error;
+    }
 };
