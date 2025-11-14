@@ -57,8 +57,7 @@ MedAssist is a full-stack web application built to streamline patient consultati
 
 3. **Access the application**
    - Frontend: http://localhost:5173
-   - Backend API: http://localhost:8000
-   - API Documentation: http://localhost:8000/api
+   - Backend API: http://localhost:8000/api
 
 4. **Default Credentials**
 
