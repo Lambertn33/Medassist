@@ -215,10 +215,5 @@ MedAssist/
 
 For detailed design decisions and architecture, see [docs/DESIGN.md](docs/DESIGN.md).
 
-## License
-
-This project is part of a senior software engineer challenge.
-
-## Support
-
-For issues and questions, please open an issue in the repository.
+## Live Demo
+https://drive.google.com/file/d/18A0dFUi5-V5m7eOP2NdN3NXoeS3pPaNz/view?usp=drive_link
